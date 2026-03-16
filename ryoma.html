@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>RYOMA Music</title>
+    <link rel="apple-touch-icon" href="icon.png?v=1">
+    <style>
+        :root {
+            --primary: #007aff;
+            --bg: #f2f2f7;
+            --card: #ffffff;
+            --text: #000000;
+            --border: #d1d1d6;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #1c1c1e;
+                --card: #2c2c2e;
+                --text: #ffffff;
+                --border: #3a3a3c;
+            }
+        }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 160px; user-select: none; }
+        .header { background: var(--card); padding: env(safe-area-inset-top) 20px 10px; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 5px rgba(0,0,0,0.1); }
+        #playlist { list-style: none; padding: 0; margin: 0; }
+        .track { background: var(--card); border-bottom: 0.5px solid var(--border); padding: 15px 20px; display: flex; align-items: center; }
+        .track:active { background: rgba(0,0,0,0.05); }
+        .track.active { color: var(--primary); font-weight: bold; background: rgba(0,122,255,0.1); }
+        .track-index { width: 30px; font-size: 12px; color: #8e8e93; }
+        .name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .player-bar { position: fixed; bottom: 0; width: 100%; background: var(--card); border-top: 0.5px solid var(--border); padding: 15px 20px calc(15px + env(safe-area-inset-bottom)); box-sizing: border-box; backdrop-filter: blur(20px); }
+        .now-playing { font-size: 13px; font-weight: 600; margin-bottom: 8px; text-align: center; }
+        audio { width: 100%; height: 40px; }
+        #status { text-align: center; padding: 20px; font-size: 14px; color: #8e8e93; }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h2 style="margin: 10px 0;">RYOMA Music</h2>
+</div>
+<div id="status">読み込み中...</div>
+<ul id="playlist"></ul>
+<div class="player-bar">
+    <div id="nowPlaying" class="now-playing">曲を選択してください</div>
+    <audio id="audioPlayer" controls playsinline></audio>
+</div>
+<script>
+const API_KEY = 'AIzaSyDZeucbLPRw8d6RXCL7UHbfF6URuVLq11k';
+const FOLDER_ID = '13jhP3vioRXfXaB2dyzUYAsaUpomYUJYN';
+
+const player = document.getElementById('audioPlayer');
+const playlistEl = document.getElementById('playlist');
+const nowPlayingEl = document.getElementById('nowPlaying');
+let currentTracks = [];
+let currentTrackIndex = 0;
+
+async function loadTracks() {
+    document.getElementById('status').innerText = '読み込み中...';
+    const url = 'https://www.googleapis.com/drive/v3/files?q=%27' + FOLDER_ID + '%27+in+parents+and+mimeType+contains+%27audio%27&key=' + API_KEY + '&fields=files(id,name)&orderBy=name';
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        currentTracks = data.files || [];
+        if (currentTracks.length === 0) {
+            document.getElementById('status').innerText = '曲が見つかりません。';
+            return;
+        }
+        currentTracks.forEach((track, index) => {
+            const li = document.createElement('li');
+            li.className = 'track';
+            li.innerHTML = '<span class="track-index">' + (index + 1) + '</span><span class="name">' + track.name + '</span>';
+            li.onclick = () => playTrack(index);
+            playlistEl.appendChild(li);
+        });
+        document.getElementById('status').innerText = '';
+    } catch (e) {
+        document.getElementById('status').innerText = 'エラーが発生しました。';
+    }
+}
+
+function playTrack(index) {
+    if (index < 0 || index >= currentTracks.length) return;
+    currentTrackIndex = index;
+    const track = currentTracks[index];
+    const fileUrl = 'https://www.googleapis.com/drive/v3/files/' + track.id + '?alt=media&key=' + API_KEY;
+    player.src = fileUrl;
+    player.play();
+    nowPlayingEl.innerText = track.name;
+    document.querySelectorAll('.track').forEach((el, i) => {
+        el.classList.toggle('active', i === index);
+    });
+}
+
+player.onended = () => {
+    if (currentTrackIndex + 1 < currentTracks.length) playTrack(currentTrackIndex + 1);
+    else playTrack(0);
+};
+
+loadTracks();
+</script>
+</body>
+</html>
