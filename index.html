@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Family Music</title>
+    <title>Music</title>
     <link rel="apple-touch-icon" href="icon.png?v=1">
     <style>
         :root {
@@ -25,7 +25,7 @@
                 --tab-bg: #3a3a3c;
             }
         }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 160px; user-select: none; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 200px; user-select: none; }
         .header { background: var(--card); padding: env(safe-area-inset-top) 20px 10px; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 5px rgba(0,0,0,0.1); }
         .folder-tabs { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0; -webkit-overflow-scrolling: touch; }
         .folder-tabs::-webkit-scrollbar { display: none; }
@@ -37,15 +37,20 @@
         .track.active { color: var(--primary); font-weight: bold; background: rgba(0,122,255,0.1); }
         .track-index { width: 30px; font-size: 12px; color: #8e8e93; }
         .name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .player-bar { position: fixed; bottom: 0; width: 100%; background: var(--card); border-top: 0.5px solid var(--border); padding: 15px 20px calc(15px + env(safe-area-inset-bottom)); box-sizing: border-box; backdrop-filter: blur(20px); }
-        .now-playing { font-size: 13px; font-weight: 600; margin-bottom: 8px; text-align: center; }
+        .player-bar { position: fixed; bottom: 0; width: 100%; background: var(--card); border-top: 0.5px solid var(--border); padding: 12px 20px calc(12px + env(safe-area-inset-bottom)); box-sizing: border-box; backdrop-filter: blur(20px); }
+        .now-playing { font-size: 13px; font-weight: 600; margin-bottom: 8px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         audio { width: 100%; height: 40px; }
+        .controls { display: flex; justify-content: center; align-items: center; gap: 20px; margin-top: 10px; }
+        .ctrl-btn { background: none; border: none; color: var(--text); font-size: 24px; cursor: pointer; padding: 4px 10px; }
+        .repeat-btn { font-size: 18px; color: #8e8e93; }
+        .repeat-btn.active-one { color: var(--primary); }
+        .repeat-btn.active-all { color: var(--primary); }
         #status { text-align: center; padding: 20px; font-size: 14px; color: #8e8e93; }
     </style>
 </head>
 <body>
 <div class="header">
-    <h2 style="margin: 10px 0;">Family Music</h2>
+    <h2 style="margin: 10px 0;">Music</h2>
     <div class="folder-tabs" id="folderTabs"></div>
 </div>
 <div id="status">読み込み中...</div>
@@ -53,6 +58,11 @@
 <div class="player-bar">
     <div id="nowPlaying" class="now-playing">曲を選択してください</div>
     <audio id="audioPlayer" controls playsinline></audio>
+    <div class="controls">
+        <button class="ctrl-btn repeat-btn" id="repeatBtn" onclick="toggleRepeat()">🔁</button>
+        <button class="ctrl-btn" onclick="playPrev()">⏮</button>
+        <button class="ctrl-btn" onclick="playNext()">⏭</button>
+    </div>
 </div>
 <script>
 const API_KEY = 'AIzaSyDZeucbLPRw8d6RXCL7UHbfF6URuVLq11k';
@@ -76,8 +86,10 @@ const player = document.getElementById('audioPlayer');
 const playlistEl = document.getElementById('playlist');
 const folderTabsEl = document.getElementById('folderTabs');
 const nowPlayingEl = document.getElementById('nowPlaying');
+const repeatBtn = document.getElementById('repeatBtn');
 let currentTracks = [];
 let currentTrackIndex = 0;
+let repeatMode = 0; // 0:なし 1:1曲 2:全曲
 
 function init() {
     FOLDERS.forEach((folder) => {
@@ -133,9 +145,41 @@ function playTrack(index) {
     });
 }
 
-player.onended = () => {
+function playNext() {
+    if (currentTracks.length === 0) return;
     if (currentTrackIndex + 1 < currentTracks.length) playTrack(currentTrackIndex + 1);
     else playTrack(0);
+}
+
+function playPrev() {
+    if (currentTracks.length === 0) return;
+    if (currentTrackIndex - 1 >= 0) playTrack(currentTrackIndex - 1);
+    else playTrack(currentTracks.length - 1);
+}
+
+function toggleRepeat() {
+    repeatMode = (repeatMode + 1) % 3;
+    if (repeatMode === 0) {
+        repeatBtn.textContent = '🔁';
+        repeatBtn.className = 'ctrl-btn repeat-btn';
+    } else if (repeatMode === 1) {
+        repeatBtn.textContent = '🔂';
+        repeatBtn.className = 'ctrl-btn repeat-btn active-one';
+    } else {
+        repeatBtn.textContent = '🔁';
+        repeatBtn.className = 'ctrl-btn repeat-btn active-all';
+    }
+}
+
+player.onended = () => {
+    if (repeatMode === 1) {
+        player.play();
+    } else if (repeatMode === 2) {
+        playNext();
+    } else {
+        if (currentTrackIndex + 1 < currentTracks.length) playTrack(currentTrackIndex + 1);
+        else playTrack(0);
+    }
 };
 
 init();
