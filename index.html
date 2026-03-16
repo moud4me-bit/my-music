@@ -9,28 +9,20 @@
     <style>
         :root { --primary: #007aff; --bg: #f2f2f7; --card: #ffffff; }
         body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding-bottom: 140px; user-select: none; }
-        
-        /* ヘッダー周り（iPhoneのノッチ対応） */
         .header { background: var(--card); padding: env(safe-area-inset-top) 20px 10px; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 5px rgba(0,0,0,0.1); }
         .folder-tabs { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0; -webkit-overflow-scrolling: touch; }
         .folder-tabs::-webkit-scrollbar { display: none; }
-        
-        .tab-btn { padding: 8px 18px; border-radius: 18px; border: none; background: #e5e5ea; font-weight: 600; font-size: 14px; white-space: nowrap; cursor: pointer; transition: 0.2s; }
+        .tab-btn { padding: 8px 18px; border-radius: 18px; border: none; background: #e5e5ea; font-weight: 600; font-size: 13px; white-space: nowrap; cursor: pointer; transition: 0.2s; }
         .tab-btn.active { background: var(--primary); color: #fff; }
-
-        /* プレイリスト */
         #playlist { list-style: none; padding: 0; margin: 0; }
         .track { background: var(--card); border-bottom: 0.5px solid #d1d1d6; padding: 15px 20px; display: flex; align-items: center; cursor: pointer; }
         .track:active { background: #e5e5ea; }
         .track.active { color: var(--primary); font-weight: bold; background: #f0f7ff; }
         .track-index { width: 30px; font-size: 12px; color: #8e8e93; }
         .name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-        /* プレイヤー（画面下部固定） */
         .player-bar { position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.9); backdrop-filter: blur(20px); border-top: 0.5px solid #c6c6c8; padding: 15px 20px calc(15px + env(safe-area-inset-bottom)); box-sizing: border-box; }
         .now-playing { font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; }
         audio { width: 100%; height: 40px; }
-        
         #status { text-align: center; padding: 20px; font-size: 14px; color: #8e8e93; }
     </style>
 </head>
@@ -50,8 +42,8 @@
 </div>
 
 <script>
-    /** --- 設定済みデータ --- **/
-    const API_KEY = 'AIzaSyC6KaSyJgH3iPtZBLhiT5CJhzGUOgSJvNQ'; 
+    /** --- ここを書き換えてください --- **/
+    const API_KEY = 'AIzaSyC6KaSyJgH3iPtZBLhiT5CJhzGUOgSJvNQ'; // あなたの新しいAPIキーをここに貼り付け
     const FOLDERS = [
         { name: 'AA曲', id: '1Wpuk92-2jC1AeCUv173zxgYFbYNoRPRb' },
         { name: 'EDM系', id: '1RXl5Pf_UmCyRRF0NHCGOSpjndbQy5-Z1' },
@@ -59,20 +51,19 @@
         { name: 'RYOMA', id: '13jhP3vioRXfXaB2dyzUYAsaUpomYUJYN' },
         { name: 'X Japan', id: '1oOznEQPA4fRtFQCRUDUlNcg0fRfaZptS' },
         { name: 'クラシック系', id: '1__aV7_43861pWdQMvxubeQRS80ado8Du' },
-        { name: 'サントラ', id: '1wHYm35ZbnswG_5ctImMIudZ_CLM0zpMB' },
+        { name: 'サウンドトラック', id: '1wHYm35ZbnswG_5ctImMIudZ_CLM0zpMB' },
         { name: 'ショート系', id: '1sXGKaIg02iQ2iM_6w4swWSQkqFcXXvCi' },
         { name: '中国', id: '1KIVShKq2gbQURbzHH5WkoFldCxl48KhM' },
         { name: '邦楽', id: '1DO7GyUHSau_j8mfDcTV4NPYcp5amV5UQ' },
         { name: '未分類', id: '1iDq2uo1hOPy-1wllTW6O-c55HBl_RCJt' },
         { name: '洋楽', id: '19c7H2FygniKINzlkLtj1iPxohSGP86s9' }
     ];
-    /** ------------------- **/
+    /** ------------------------------ **/
 
     const player = document.getElementById('audioPlayer');
     const playlistEl = document.getElementById('playlist');
     const folderTabsEl = document.getElementById('folderTabs');
     const nowPlayingEl = document.getElementById('nowPlaying');
-    
     let currentTracks = [];
     let currentTrackIndex = 0;
 
@@ -84,7 +75,6 @@
             btn.onclick = () => switchFolder(folder.id, btn);
             folderTabsEl.appendChild(btn);
         });
-        
         const lastId = localStorage.getItem('lastFolderId') || FOLDERS[0].id;
         const targetBtn = Array.from(folderTabsEl.children).find((b, i) => FOLDERS[i].id === lastId) || folderTabsEl.firstChild;
         switchFolder(lastId, targetBtn);
@@ -94,22 +84,17 @@
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         btnElement.classList.add('active');
         localStorage.setItem('lastFolderId', folderId);
-        
         document.getElementById('status').innerText = "読み込み中...";
         playlistEl.innerHTML = "";
-        
-        const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType+contains+'audio'+and+explicitlyTrashed=false&key=${API_KEY}&fields=files(id,name)&orderBy=name&pageSize=1000`;
-        
+        const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType+contains+'audio'&key=${API_KEY}&fields=files(id,name)&orderBy=name`;
         try {
             const response = await fetch(url);
             const data = await response.json();
             currentTracks = data.files || [];
-            
             if (currentTracks.length === 0) {
                 document.getElementById('status').innerText = "曲が見つかりません。";
                 return;
             }
-
             currentTracks.forEach((track, index) => {
                 const li = document.createElement('li');
                 li.className = 'track';
@@ -119,7 +104,7 @@
             });
             document.getElementById('status').innerText = "";
         } catch (e) {
-            document.getElementById('status').innerText = "エラー: フォルダの共有設定を確認してください。";
+            document.getElementById('status').innerText = "読み込みエラー。設定を確認してください。";
         }
     }
 
@@ -127,32 +112,18 @@
         if (index < 0 || index >= currentTracks.length) return;
         currentTrackIndex = index;
         const track = currentTracks[index];
-        
         const fileUrl = `https://www.googleapis.com/drive/v3/files/${track.id}?alt=media&key=${API_KEY}`;
         player.src = fileUrl;
-        player.play().catch(() => {
-            console.log("Tap required to play");
-        });
-        
+        player.play();
         nowPlayingEl.innerText = track.name;
-        
         document.querySelectorAll('.track').forEach((el, i) => {
             el.classList.toggle('active', i === index);
         });
-
-        // 自動スクロール（再生中の曲を中央付近へ）
-        const activeEl = document.querySelector('.track.active');
-        if (activeEl) {
-            activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
     }
 
     player.onended = () => {
-        if (currentTrackIndex + 1 < currentTracks.length) {
-            playTrack(currentTrackIndex + 1);
-        } else {
-            playTrack(0);
-        }
+        if (currentTrackIndex + 1 < currentTracks.length) playTrack(currentTrackIndex + 1);
+        else playTrack(0);
     };
 
     init();
