@@ -7,90 +7,356 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Music</title>
     <link rel="apple-touch-icon" href="icon.png?v=1">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
         :root {
-            --primary: #0a84ff;
-            --bg: #0d0d0f;
-            --card: #1c1c1e;
-            --card2: #2c2c2e;
-            --text: #ffffff;
-            --subtext: #8e8e93;
-            --border: #3a3a3c;
-            --danger: #ff453a;
+            --gold: #c9a84c;
+            --gold-light: #e8c97a;
+            --gold-dim: rgba(201,168,76,0.15);
+            --bg: #0a0905;
+            --surface: #111009;
+            --surface2: #1a180f;
+            --surface3: #242218;
+            --text: #f0e8d0;
+            --text-dim: #6b6450;
+            --text-mid: #9e9278;
+            --border: rgba(201,168,76,0.12);
+            --danger: #c0392b;
         }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 220px; user-select: none; min-height: 100vh; }
 
-        .header { background: rgba(13,13,15,0.92); padding: env(safe-area-inset-top) 20px 0; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(20px); border-bottom: 0.5px solid var(--border); }
-        .header-top { display: flex; align-items: center; justify-content: space-between; padding: 14px 0 12px; }
-        .header-title { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
-        .edit-toggle { background: none; border: none; color: var(--primary); font-size: 13px; font-weight: 600; cursor: pointer; padding: 4px 8px; }
+        body {
+            font-family: 'DM Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            padding-bottom: 260px;
+            user-select: none;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-        #playlist { list-style: none; }
-        .track { background: var(--card); border-bottom: 0.5px solid var(--border); padding: 14px 16px; display: flex; align-items: center; gap: 12px; transition: background 0.15s; }
-        .track:active { background: var(--card2); }
-        .track.active { background: rgba(10,132,255,0.12); }
-        .track-index { width: 24px; font-size: 12px; color: var(--subtext); text-align: center; flex-shrink: 0; }
-        .track.active .track-index { color: var(--primary); }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.4;
+        }
+
+        .header {
+            padding: env(safe-area-inset-top) 0 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10,9,5,0.92);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--border);
+        }
+        .header-inner { padding: 14px 20px 14px; }
+        .header-top {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+        }
+        .logo-wrap { display: flex; flex-direction: column; gap: 2px; }
+        .logo-eyebrow {
+            font-size: 9px;
+            letter-spacing: 0.3em;
+            color: var(--gold);
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+        .logo {
+            font-family: 'DM Serif Display', serif;
+            font-size: 32px;
+            font-weight: 400;
+            color: var(--text);
+            letter-spacing: -0.5px;
+            line-height: 1;
+        }
+        .logo span { font-style: italic; color: var(--gold); }
+
+        .hbtn {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text-mid);
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            padding: 7px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .hbtn:active { transform: scale(0.95); }
+        .hbtn.on { background: var(--gold-dim); border-color: var(--gold); color: var(--gold-light); }
+
+        #playlist { list-style: none; padding: 6px 0; }
+
+        .track {
+            display: flex;
+            align-items: center;
+            padding: 11px 20px;
+            gap: 14px;
+            border-bottom: 1px solid rgba(201,168,76,0.05);
+            transition: all 0.18s;
+            cursor: pointer;
+            position: relative;
+        }
+        .track:active { background: rgba(201,168,76,0.04); }
+        .track.active {
+            background: linear-gradient(90deg, rgba(201,168,76,0.08) 0%, transparent 100%);
+        }
+        .track.active::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 2px;
+            background: var(--gold);
+            border-radius: 0 2px 2px 0;
+        }
+        .track-num {
+            font-size: 10px;
+            color: var(--text-dim);
+            width: 22px;
+            text-align: right;
+            flex-shrink: 0;
+            font-feature-settings: 'tnum';
+        }
+        .track.active .track-num { color: var(--gold); }
+        .track-disc {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, var(--surface3), var(--surface));
+            border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            position: relative; overflow: hidden;
+            transition: all 0.3s;
+        }
+        .track-disc::after {
+            content: '';
+            position: absolute;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+        }
+        .track.active .track-disc {
+            border-color: var(--gold);
+            animation: spin 4s linear infinite;
+        }
+        .track.active .track-disc::after { border-color: var(--gold); }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         .track-info { flex: 1; overflow: hidden; }
-        .track-name { font-size: 15px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .track.active .track-name { color: var(--primary); font-weight: 600; }
-        .track-actions { display: none; gap: 6px; flex-shrink: 0; }
-        .action-btn { background: var(--card2); border: none; color: var(--subtext); font-size: 13px; padding: 5px 10px; border-radius: 10px; cursor: pointer; }
-        .action-btn.danger { color: var(--danger); }
-        .action-btn:active { opacity: 0.7; }
+        .track-name {
+            font-size: 13px;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: var(--text);
+        }
+        .track.active .track-name { color: var(--gold-light); }
+
+        .track-actions { display: none; gap: 4px; flex-shrink: 0; }
+        .act-btn {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            font-size: 11px;
+            padding: 5px 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'DM Mono', monospace;
+            transition: all 0.15s;
+        }
+        .act-btn:active { transform: scale(0.93); }
+        .act-btn.del { color: var(--danger); border-color: rgba(192,57,43,0.25); }
         .edit-mode .track-actions { display: flex; }
 
-        #status { text-align: center; padding: 40px 20px; font-size: 14px; color: var(--subtext); }
+        #status {
+            text-align: center;
+            padding: 60px 20px;
+            font-family: 'DM Serif Display', serif;
+            font-size: 16px;
+            font-style: italic;
+            color: var(--text-dim);
+        }
 
-        .player-bar { position: fixed; bottom: 0; width: 100%; background: rgba(28,28,30,0.96); border-top: 0.5px solid var(--border); padding: 12px 20px calc(12px + env(safe-area-inset-bottom)); backdrop-filter: blur(30px); }
-        .now-playing { font-size: 14px; font-weight: 600; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 8px; }
-        audio { width: 100%; height: 36px; }
-        .controls { display: flex; justify-content: center; align-items: center; gap: 24px; margin-top: 10px; }
-        .ctrl-btn { background: none; border: none; color: var(--text); font-size: 26px; cursor: pointer; padding: 4px; line-height: 1; }
-        .ctrl-btn:active { opacity: 0.6; }
-        .repeat-btn { font-size: 20px; color: var(--subtext); }
-        .repeat-btn.on { color: var(--primary); }
+        .player-bar {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: rgba(10,9,5,0.97);
+            border-top: 1px solid var(--border);
+            padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+        }
+        .player-bar::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            opacity: 0.4;
+        }
+        .now-playing-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .player-disc {
+            width: 42px; height: 42px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, var(--surface3), var(--surface));
+            border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            position: relative; overflow: hidden;
+        }
+        .player-disc::after {
+            content: '';
+            position: absolute;
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+        }
+        .player-disc.playing {
+            border-color: var(--gold);
+            box-shadow: 0 0 16px rgba(201,168,76,0.25);
+            animation: spin 3s linear infinite;
+        }
+        .player-disc.playing::after { border-color: var(--gold); }
+        .player-info { flex: 1; overflow: hidden; }
+        .player-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 15px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        audio { width: 100%; height: 28px; margin-bottom: 10px; border-radius: 4px; }
+        .controls-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+        }
+        .ctrl {
+            background: none;
+            border: none;
+            color: var(--text-mid);
+            cursor: pointer;
+            padding: 10px 20px;
+            font-size: 30px;
+            line-height: 1;
+            transition: all 0.15s;
+            border-radius: 8px;
+        }
+        .ctrl:active { transform: scale(0.88); opacity: 0.6; }
+        .ctrl-repeat { font-size: 22px; color: var(--text-dim); }
+        .ctrl-repeat.on { color: var(--gold); filter: drop-shadow(0 0 5px rgba(201,168,76,0.5)); }
 
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; align-items: flex-end; }
-        .modal-overlay.show { display: flex; }
-        .modal { background: var(--card); border-radius: 20px 20px 0 0; padding: 20px; width: 100%; padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
-        .modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; text-align: center; }
-        .modal input { width: 100%; background: var(--card2); border: none; color: var(--text); font-size: 16px; padding: 12px 16px; border-radius: 12px; outline: none; margin-bottom: 12px; }
-        .modal-btns { display: flex; gap: 10px; }
-        .modal-btn { flex: 1; padding: 13px; border-radius: 14px; border: none; font-size: 16px; font-weight: 600; cursor: pointer; }
-        .modal-btn.cancel { background: var(--card2); color: var(--text); }
-        .modal-btn.confirm { background: var(--primary); color: #fff; }
+        .overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 300; align-items: flex-end;
+        }
+        .overlay.show { display: flex; }
+        .sheet {
+            background: var(--surface);
+            border-radius: 18px 18px 0 0;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
+            width: 100%;
+        }
+        .sheet-handle {
+            width: 32px; height: 3px;
+            background: var(--surface3);
+            border-radius: 2px;
+            margin: 0 auto 20px;
+        }
+        .sheet h3 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 18px; font-weight: 400;
+            margin-bottom: 16px; text-align: center;
+        }
+        .sheet input {
+            width: 100%;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: 'DM Mono', monospace;
+            font-size: 14px;
+            padding: 13px 16px;
+            border-radius: 8px;
+            outline: none; margin-bottom: 12px;
+        }
+        .sheet input:focus { border-color: var(--gold); }
+        .sheet-btns { display: flex; gap: 10px; }
+        .sheet-btn {
+            flex: 1; padding: 13px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-family: 'DM Mono', monospace;
+            font-size: 13px; letter-spacing: 0.05em;
+            cursor: pointer; transition: all 0.15s;
+        }
+        .sheet-btn:active { transform: scale(0.97); }
+        .sheet-btn.cancel { background: var(--surface2); color: var(--text-mid); }
+        .sheet-btn.confirm { background: var(--gold-dim); border-color: var(--gold); color: var(--gold-light); }
     </style>
 </head>
 <body>
+
 <div class="header">
-    <div class="header-top">
-        <span class="header-title">Music</span>
-        <button class="edit-toggle" id="editToggle" onclick="toggleEdit()">編集</button>
+    <div class="header-inner">
+        <div class="header-top">
+            <div class="logo-wrap">
+                <span class="logo-eyebrow">RYOMA</span>
+                <span class="logo">Mu<span>sic</span></span>
+            </div>
+            <button class="hbtn" id="editToggle" onclick="toggleEdit()">編集</button>
+        </div>
     </div>
 </div>
 
-<div id="status">読み込み中...</div>
+<div id="status">— 読み込み中 —</div>
 <ul id="playlist"></ul>
 
 <div class="player-bar">
-    <div id="nowPlaying" class="now-playing">曲を選択してください</div>
+    <div class="now-playing-row">
+        <div class="player-disc" id="playerDisc"></div>
+        <div class="player-info">
+            <div class="player-title" id="nowPlaying">Select a track</div>
+        </div>
+    </div>
     <audio id="audioPlayer" controls playsinline></audio>
-    <div class="controls">
-        <button class="ctrl-btn repeat-btn" id="repeatBtn" onclick="toggleRepeat()">🔁</button>
-        <button class="ctrl-btn" onclick="playPrev()">⏮</button>
-        <button class="ctrl-btn" onclick="playNext()">⏭</button>
+    <div class="controls-row">
+        <button class="ctrl ctrl-repeat" id="repeatBtn" onclick="toggleRepeat()">⇄</button>
+        <button class="ctrl" onclick="playPrev()">⏮</button>
+        <button class="ctrl" onclick="playNext()">⏭</button>
     </div>
 </div>
 
-<div class="modal-overlay" id="renameModal">
-    <div class="modal">
-        <h3>曲名を変更</h3>
-        <input type="text" id="renameInput" placeholder="新しい曲名">
-        <div class="modal-btns">
-            <button class="modal-btn cancel" onclick="closeModal()">キャンセル</button>
-            <button class="modal-btn confirm" onclick="confirmRename()">変更</button>
+<div class="overlay" id="renameOverlay">
+    <div class="sheet">
+        <div class="sheet-handle"></div>
+        <h3>Rename Track</h3>
+        <input type="text" id="renameInput" placeholder="曲名を入力">
+        <div class="sheet-btns">
+            <button class="sheet-btn cancel" onclick="closeModal()">Cancel</button>
+            <button class="sheet-btn confirm" onclick="confirmRename()">Rename</button>
         </div>
     </div>
 </div>
@@ -103,71 +369,64 @@ const player = document.getElementById('audioPlayer');
 const playlistEl = document.getElementById('playlist');
 const nowPlayingEl = document.getElementById('nowPlaying');
 const repeatBtn = document.getElementById('repeatBtn');
+const playerDisc = document.getElementById('playerDisc');
 
-let currentTracks = [];
-let currentTrackIndex = 0;
-let repeatMode = 0;
-let isEditMode = false;
-let renameTargetIndex = -1;
+let currentTracks = [], currentTrackIndex = 0;
+let repeatMode = 0, isEditMode = false, renameTargetIndex = -1;
 
-function stripExt(name) {
-    return name.replace(/\.[^/.]+$/, '');
-}
+function stripExt(n) { return n.replace(/\.[^/.]+$/, ''); }
 
 async function loadTracks() {
-    document.getElementById('status').innerText = '読み込み中...';
-    const url = 'https://www.googleapis.com/drive/v3/files?q=%27' + FOLDER_ID + '%27+in+parents+and+mimeType+contains+%27audio%27&key=' + API_KEY + '&fields=files(id,name)&orderBy=name';
+    document.getElementById('status').innerText = '— 読み込み中 —';
     try {
-        const response = await fetch(url);
-        const data = await response.json();
-        currentTracks = (data.files || []).map(f => ({ ...f, displayName: stripExt(f.name) }));
+        const r = await fetch('https://www.googleapis.com/drive/v3/files?q=%27' + FOLDER_ID + '%27+in+parents+and+mimeType+contains+%27audio%27&key=' + API_KEY + '&fields=files(id,name)&orderBy=name');
+        const d = await r.json();
+        currentTracks = (d.files || []).map(f => ({ ...f, displayName: stripExt(f.name) }));
         renderPlaylist();
-    } catch (e) {
-        document.getElementById('status').innerText = 'エラーが発生しました。';
+    } catch(e) {
+        document.getElementById('status').innerText = '— エラー —';
     }
 }
 
 function renderPlaylist() {
     playlistEl.innerHTML = '';
-    if (currentTracks.length === 0) {
-        document.getElementById('status').innerText = '曲が見つかりません。';
-        return;
-    }
+    if (!currentTracks.length) { document.getElementById('status').innerText = '— 曲が見つかりません —'; return; }
     document.getElementById('status').innerText = '';
-    currentTracks.forEach((track, index) => {
+    currentTracks.forEach((track, i) => {
         const li = document.createElement('li');
-        li.className = 'track' + (index === currentTrackIndex ? ' active' : '');
+        li.className = 'track' + (i === currentTrackIndex ? ' active' : '');
         li.innerHTML =
-            '<span class="track-index">' + (index + 1) + '</span>' +
-            '<div class="track-info" onclick="playTrack(' + index + ')">' +
+            '<span class="track-num">' + String(i+1).padStart(2,'0') + '</span>' +
+            '<div class="track-disc"></div>' +
+            '<div class="track-info" onclick="playTrack(' + i + ')">' +
                 '<div class="track-name">' + track.displayName + '</div>' +
             '</div>' +
             '<div class="track-actions">' +
-                '<button class="action-btn" onclick="moveUp(' + index + ')">↑</button>' +
-                '<button class="action-btn" onclick="moveDown(' + index + ')">↓</button>' +
-                '<button class="action-btn" onclick="openRename(' + index + ')">✏️</button>' +
-                '<button class="action-btn danger" onclick="deleteTrack(' + index + ')">🗑</button>' +
+                '<button class="act-btn" onclick="moveUp(' + i + ')">↑</button>' +
+                '<button class="act-btn" onclick="moveDown(' + i + ')">↓</button>' +
+                '<button class="act-btn" onclick="openRename(' + i + ')">✎</button>' +
+                '<button class="act-btn del" onclick="deleteTrack(' + i + ')">✕</button>' +
             '</div>';
         playlistEl.appendChild(li);
     });
     if (isEditMode) playlistEl.classList.add('edit-mode');
 }
 
-function playTrack(index) {
-    if (index < 0 || index >= currentTracks.length) return;
-    currentTrackIndex = index;
-    const track = currentTracks[index];
-    player.src = 'https://www.googleapis.com/drive/v3/files/' + track.id + '?alt=media&key=' + API_KEY;
+function playTrack(i) {
+    if (i < 0 || i >= currentTracks.length) return;
+    currentTrackIndex = i;
+    const t = currentTracks[i];
+    player.src = 'https://www.googleapis.com/drive/v3/files/' + t.id + '?alt=media&key=' + API_KEY;
     player.play();
-    nowPlayingEl.innerText = track.displayName;
-    document.querySelectorAll('.track').forEach((el, i) => el.classList.toggle('active', i === index));
+    nowPlayingEl.innerText = t.displayName;
+    playerDisc.classList.add('playing');
+    document.querySelectorAll('.track').forEach((el, j) => el.classList.toggle('active', j === i));
 }
 
 function playNext() {
     if (!currentTracks.length) return;
     playTrack(currentTrackIndex + 1 < currentTracks.length ? currentTrackIndex + 1 : 0);
 }
-
 function playPrev() {
     if (!currentTracks.length) return;
     playTrack(currentTrackIndex - 1 >= 0 ? currentTrackIndex - 1 : currentTracks.length - 1);
@@ -175,61 +434,51 @@ function playPrev() {
 
 function toggleRepeat() {
     repeatMode = (repeatMode + 1) % 3;
-    repeatBtn.textContent = repeatMode === 1 ? '🔂' : '🔁';
-    repeatBtn.className = 'ctrl-btn repeat-btn' + (repeatMode > 0 ? ' on' : '');
+    repeatBtn.textContent = repeatMode === 1 ? '↺' : '⇄';
+    repeatBtn.className = 'ctrl ctrl-repeat' + (repeatMode > 0 ? ' on' : '');
 }
 
-player.onended = () => {
-    if (repeatMode === 1) player.play();
-    else playNext();
-};
+player.onended = () => { if (repeatMode === 1) player.play(); else playNext(); };
+player.onpause = () => { if (!player.ended) playerDisc.classList.remove('playing'); };
+player.onplay = () => { if (currentTracks.length) playerDisc.classList.add('playing'); };
 
 function toggleEdit() {
     isEditMode = !isEditMode;
     document.getElementById('editToggle').innerText = isEditMode ? '完了' : '編集';
+    document.getElementById('editToggle').classList.toggle('on', isEditMode);
     playlistEl.classList.toggle('edit-mode', isEditMode);
 }
 
-function moveUp(index) {
-    if (index === 0) return;
-    [currentTracks[index - 1], currentTracks[index]] = [currentTracks[index], currentTracks[index - 1]];
-    if (currentTrackIndex === index) currentTrackIndex--;
-    else if (currentTrackIndex === index - 1) currentTrackIndex++;
-    renderPlaylist();
-    if (isEditMode) playlistEl.classList.add('edit-mode');
+function moveUp(i) {
+    if (i === 0) return;
+    [currentTracks[i-1], currentTracks[i]] = [currentTracks[i], currentTracks[i-1]];
+    if (currentTrackIndex === i) currentTrackIndex--;
+    else if (currentTrackIndex === i-1) currentTrackIndex++;
+    renderPlaylist(); if (isEditMode) playlistEl.classList.add('edit-mode');
 }
-
-function moveDown(index) {
-    if (index === currentTracks.length - 1) return;
-    [currentTracks[index], currentTracks[index + 1]] = [currentTracks[index + 1], currentTracks[index]];
-    if (currentTrackIndex === index) currentTrackIndex++;
-    else if (currentTrackIndex === index + 1) currentTrackIndex--;
-    renderPlaylist();
-    if (isEditMode) playlistEl.classList.add('edit-mode');
+function moveDown(i) {
+    if (i === currentTracks.length - 1) return;
+    [currentTracks[i], currentTracks[i+1]] = [currentTracks[i+1], currentTracks[i]];
+    if (currentTrackIndex === i) currentTrackIndex++;
+    else if (currentTrackIndex === i+1) currentTrackIndex--;
+    renderPlaylist(); if (isEditMode) playlistEl.classList.add('edit-mode');
 }
-
-function deleteTrack(index) {
-    currentTracks.splice(index, 1);
+function deleteTrack(i) {
+    currentTracks.splice(i, 1);
     if (currentTrackIndex >= currentTracks.length) currentTrackIndex = currentTracks.length - 1;
-    renderPlaylist();
-    if (isEditMode) playlistEl.classList.add('edit-mode');
+    renderPlaylist(); if (isEditMode) playlistEl.classList.add('edit-mode');
 }
 
-function openRename(index) {
-    renameTargetIndex = index;
-    document.getElementById('renameInput').value = currentTracks[index].displayName;
-    document.getElementById('renameModal').classList.add('show');
+function openRename(i) {
+    renameTargetIndex = i;
+    document.getElementById('renameInput').value = currentTracks[i].displayName;
+    document.getElementById('renameOverlay').classList.add('show');
 }
-
-function closeModal() {
-    document.getElementById('renameModal').classList.remove('show');
-}
-
+function closeModal() { document.getElementById('renameOverlay').classList.remove('show'); }
 function confirmRename() {
     if (renameTargetIndex >= 0) {
         currentTracks[renameTargetIndex].displayName = document.getElementById('renameInput').value;
-        renderPlaylist();
-        if (isEditMode) playlistEl.classList.add('edit-mode');
+        renderPlaylist(); if (isEditMode) playlistEl.classList.add('edit-mode');
         if (currentTrackIndex === renameTargetIndex) nowPlayingEl.innerText = currentTracks[renameTargetIndex].displayName;
     }
     closeModal();
