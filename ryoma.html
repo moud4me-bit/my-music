@@ -193,16 +193,29 @@ async function fetchTracks(folderId, folderName) {
     return (d.files || []).map(f => ({ ...f, displayName: stripExt(f.name), folderName }));
 }
 
+async function fetchAllTracks() {
+    const results = await Promise.all([
+        fetchTracks(ROOT_FOLDER_ID, ROOT_FOLDER_NAME).catch(() => []),
+        ...allFolders.map(sf => fetchTracks(sf.id, sf.name).catch(() => []))
+    ]);
+    return results.flat();
+}
+
+async function loadAllTracks() {
+    document.getElementById('status').innerText = '— 読み込み中 —';
+    playlistEl.innerHTML = '';
+    try {
+        currentTracks = await fetchAllTracks();
+        currentTrackIndex = 0;
+        renderPlaylist(true);
+    } catch(e) { document.getElementById('status').innerText = '— エラー —'; }
+}
+
 async function init() {
     document.getElementById('status').innerText = '— 読み込み中 —';
-    // サブフォルダ取得
     try { allFolders = await fetchSubFolders(ROOT_FOLDER_ID); } catch(e) { allFolders = []; }
-
-    // タブ描画（全曲 + サブフォルダ）
     renderMainTabs();
-
-    // 最初は全曲ロード
-    await loadFolder(ROOT_FOLDER_ID, ROOT_FOLDER_NAME, null);
+    await loadAllTracks();
 }
 
 function renderMainTabs() {
@@ -211,7 +224,7 @@ function renderMainTabs() {
     const allBtn = document.createElement('button');
     allBtn.className = 'tab active';
     allBtn.innerText = '全曲';
-    allBtn.onclick = () => switchMainTab(ROOT_FOLDER_ID, ROOT_FOLDER_NAME, allBtn);
+    allBtn.onclick = () => { document.querySelectorAll('.tab').forEach(b => b.classList.remove('active')); allBtn.classList.add('active'); subTabsWrap.classList.remove('show'); loadAllTracks(); };
     folderTabsEl.appendChild(allBtn);
     // サブフォルダタブ
     allFolders.forEach(sf => {
@@ -272,13 +285,17 @@ async function toggleShuffle() {
     shuffleMode = (shuffleMode + 1) % 2;
     shuffleBtn.className = 'ctrl ctrl-shuffle';
     if (shuffleMode === 0) {
-        // OFF: 元に戻す
+        // OFF: 元に戻す（全曲タブが選ばれていれば全曲、それ以外はそのフォルダ）
         shuffleBtn.classList.remove('folder-mode');
         const activeTab = folderTabsEl.querySelector('.tab.active');
         const idx = Array.from(folderTabsEl.children).indexOf(activeTab);
-        const fid = idx === 0 ? ROOT_FOLDER_ID : allFolders[idx-1]?.id || ROOT_FOLDER_ID;
-        const fname = idx === 0 ? ROOT_FOLDER_NAME : allFolders[idx-1]?.name || ROOT_FOLDER_NAME;
-        await loadFolder(fid, fname, null);
+        if (idx === 0) {
+            await loadAllTracks();
+        } else {
+            const fid = allFolders[idx-1]?.id || ROOT_FOLDER_ID;
+            const fname = allFolders[idx-1]?.name || ROOT_FOLDER_NAME;
+            await loadFolder(fid, fname, null);
+        }
     } else {
         // フォルダ内シャッフル
         shuffleBtn.classList.add('folder-mode');
