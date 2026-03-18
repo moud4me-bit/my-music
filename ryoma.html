@@ -10,7 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
         :root {
             --gold: #c9a84c;
             --gold-light: #e8c97a;
@@ -25,326 +24,106 @@
             --border: rgba(201,168,76,0.12);
             --danger: #c0392b;
         }
+        body { font-family: 'DM Mono', monospace; background: var(--bg); color: var(--text); padding-bottom: 280px; user-select: none; min-height: 100vh; overflow-x: hidden; }
+        body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 9999; opacity: 0.4; }
 
-        body {
-            font-family: 'DM Mono', monospace;
-            background: var(--bg);
-            color: var(--text);
-            padding-bottom: 260px;
-            user-select: none;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-            pointer-events: none;
-            z-index: 9999;
-            opacity: 0.4;
-        }
-
-        .header {
-            padding: env(safe-area-inset-top) 0 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: rgba(10,9,5,0.92);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border-bottom: 1px solid var(--border);
-        }
-        .header-inner { padding: 14px 20px 14px; }
-        .header-top {
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-        }
-        .logo-wrap { display: flex; flex-direction: column; gap: 2px; }
-        .logo-eyebrow {
-            font-size: 9px;
-            letter-spacing: 0.3em;
-            color: var(--gold);
-            text-transform: uppercase;
-            opacity: 0.8;
-        }
-        .logo {
-            font-family: 'DM Serif Display', serif;
-            font-size: 32px;
-            font-weight: 400;
-            color: var(--text);
-            letter-spacing: -0.5px;
-            line-height: 1;
-        }
+        .header { padding: env(safe-area-inset-top) 0 0; position: sticky; top: 0; z-index: 100; background: rgba(10,9,5,0.92); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-bottom: 1px solid var(--border); }
+        .header-inner { padding: 14px 20px 0; }
+        .header-top { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 14px; }
+        .logo { font-family: 'DM Serif Display', serif; font-size: 32px; font-weight: 400; color: var(--text); letter-spacing: -0.5px; line-height: 1; }
         .logo span { font-style: italic; color: var(--gold); }
-
-        .hbtn {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            color: var(--text-mid);
-            font-family: 'DM Mono', monospace;
-            font-size: 10px;
-            letter-spacing: 0.1em;
-            padding: 7px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
+        .header-controls { display: flex; align-items: center; gap: 8px; }
+        .hbtn { background: var(--surface2); border: 1px solid var(--border); color: var(--text-mid); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; padding: 7px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
         .hbtn:active { transform: scale(0.95); }
         .hbtn.on { background: var(--gold-dim); border-color: var(--gold); color: var(--gold-light); }
 
-        #playlist { list-style: none; padding: 6px 0; }
+        .tabs-section { padding: 0 20px 12px; }
+        .tabs-row { display: flex; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .tabs-row::-webkit-scrollbar { display: none; }
+        .tab { padding: 7px 16px; border-radius: 4px; border: 1px solid var(--border); background: transparent; color: var(--text-mid); font-family: 'DM Serif Display', serif; font-size: 14px; white-space: nowrap; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+        .tab:active { transform: scale(0.96); }
+        .tab.active { background: var(--gold-dim); border-color: var(--gold); color: var(--gold-light); }
 
-        .track {
-            display: flex;
-            align-items: center;
-            padding: 11px 20px;
-            gap: 14px;
-            border-bottom: 1px solid rgba(201,168,76,0.05);
-            transition: all 0.18s;
-            cursor: pointer;
-            position: relative;
-        }
+        .sub-tabs-wrap { display: none; padding: 0 20px 10px; border-top: 1px solid var(--border); }
+        .sub-tabs-wrap.show { display: block; }
+        .sub-tabs-inner { display: flex; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-top: 10px; }
+        .sub-tabs-inner::-webkit-scrollbar { display: none; }
+        .sub-tab { padding: 5px 14px; border-radius: 4px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); font-family: 'DM Serif Display', serif; font-size: 13px; white-space: nowrap; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+        .sub-tab:active { transform: scale(0.96); }
+        .sub-tab.active { background: rgba(201,168,76,0.08); border-color: rgba(201,168,76,0.4); color: var(--gold-light); }
+
+        #status { text-align: center; padding: 60px 20px; font-family: 'DM Serif Display', serif; font-size: 16px; font-style: italic; color: var(--text-dim); }
+        #playlist { list-style: none; padding: 6px 0; }
+        .track { display: flex; align-items: center; padding: 11px 20px; gap: 14px; border-bottom: 1px solid rgba(201,168,76,0.05); transition: all 0.18s; cursor: pointer; position: relative; }
         .track:active { background: rgba(201,168,76,0.04); }
-        .track.active {
-            background: linear-gradient(90deg, rgba(201,168,76,0.08) 0%, transparent 100%);
-        }
-        .track.active::before {
-            content: '';
-            position: absolute;
-            left: 0; top: 0; bottom: 0;
-            width: 2px;
-            background: var(--gold);
-            border-radius: 0 2px 2px 0;
-        }
-        .track-num {
-            font-size: 10px;
-            color: var(--text-dim);
-            width: 22px;
-            text-align: right;
-            flex-shrink: 0;
-            font-feature-settings: 'tnum';
-        }
+        .track.active { background: linear-gradient(90deg, rgba(201,168,76,0.08) 0%, transparent 100%); }
+        .track.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--gold); border-radius: 0 2px 2px 0; }
+        .track-num { font-size: 10px; color: var(--text-dim); width: 22px; text-align: right; flex-shrink: 0; }
         .track.active .track-num { color: var(--gold); }
-        .track-disc {
-            width: 36px; height: 36px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, var(--surface3), var(--surface));
-            border: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0;
-            position: relative; overflow: hidden;
-            transition: all 0.3s;
-        }
-        .track-disc::after {
-            content: '';
-            position: absolute;
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: var(--bg);
-            border: 1px solid var(--border);
-        }
-        .track.active .track-disc {
-            border-color: var(--gold);
-            animation: spin 4s linear infinite;
-        }
+        .track-disc { width: 36px; height: 36px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, var(--surface3), var(--surface)); border: 1px solid var(--border); flex-shrink: 0; position: relative; overflow: hidden; }
+        .track-disc::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 8px; height: 8px; border-radius: 50%; background: var(--bg); border: 1px solid var(--border); }
+        .track.active .track-disc { border-color: var(--gold); animation: spin 4s linear infinite; }
         .track.active .track-disc::after { border-color: var(--gold); }
         @keyframes spin { to { transform: rotate(360deg); } }
-
         .track-info { flex: 1; overflow: hidden; }
-        .track-name {
-            font-size: 13px;
-            font-weight: 500;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            color: var(--text);
-        }
+        .track-name { font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .track.active .track-name { color: var(--gold-light); }
-
+        .track-sub { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
         .track-actions { display: none; gap: 4px; flex-shrink: 0; }
-        .act-btn {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            color: var(--text-dim);
-            font-size: 11px;
-            padding: 5px 8px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-family: 'DM Mono', monospace;
-            transition: all 0.15s;
-        }
+        .act-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim); font-size: 11px; padding: 5px 8px; border-radius: 5px; cursor: pointer; font-family: 'DM Mono', monospace; }
         .act-btn:active { transform: scale(0.93); }
         .act-btn.del { color: var(--danger); border-color: rgba(192,57,43,0.25); }
         .edit-mode .track-actions { display: flex; }
 
-        #status {
-            text-align: center;
-            padding: 60px 20px;
-            font-family: 'DM Serif Display', serif;
-            font-size: 16px;
-            font-style: italic;
-            color: var(--text-dim);
-        }
-
-        .player-bar {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background: rgba(10,9,5,0.97);
-            border-top: 1px solid var(--border);
-            padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
-            backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: blur(40px);
-        }
-        .player-bar::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--gold), transparent);
-            opacity: 0.4;
-        }
-        .now-playing-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 10px;
-        }
-        .player-disc {
-            width: 42px; height: 42px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 35% 35%, var(--surface3), var(--surface));
-            border: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0;
-            position: relative; overflow: hidden;
-        }
-        .player-disc::after {
-            content: '';
-            position: absolute;
-            width: 10px; height: 10px;
-            border-radius: 50%;
-            background: var(--bg);
-            border: 1px solid var(--border);
-        }
-        .player-disc.playing {
-            border-color: var(--gold);
-            box-shadow: 0 0 16px rgba(201,168,76,0.25);
-            animation: spin 3s linear infinite;
-        }
+        .player-bar { position: fixed; bottom: 0; width: 100%; background: rgba(10,9,5,0.97); border-top: 1px solid var(--border); padding: 14px 20px calc(14px + env(safe-area-inset-bottom)); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); }
+        .player-bar::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); opacity: 0.4; }
+        .now-playing-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+        .player-disc { width: 42px; height: 42px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, var(--surface3), var(--surface)); border: 1px solid var(--border); flex-shrink: 0; position: relative; overflow: hidden; }
+        .player-disc::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 10px; height: 10px; border-radius: 50%; background: var(--bg); border: 1px solid var(--border); }
+        .player-disc.playing { border-color: var(--gold); box-shadow: 0 0 16px rgba(201,168,76,0.25); animation: spin 3s linear infinite; }
         .player-disc.playing::after { border-color: var(--gold); }
         .player-info { flex: 1; overflow: hidden; }
-        .player-title {
-            font-family: 'DM Serif Display', serif;
-            font-size: 15px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
+        .player-title { font-family: 'DM Serif Display', serif; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .player-folder { font-size: 10px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 2px; }
         audio { width: 100%; height: 28px; margin-bottom: 10px; border-radius: 4px; }
-        .controls-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .ctrl {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            color: var(--text-mid);
-            cursor: pointer;
-            width: 52px;
-            height: 52px;
-            font-size: 20px;
-            line-height: 1;
-            transition: all 0.18s;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .controls-row { display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .ctrl { background: var(--surface2); border: 1px solid var(--border); color: var(--text-mid); cursor: pointer; width: 52px; height: 52px; font-size: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.18s; }
         .ctrl:active { transform: scale(0.88); opacity: 0.7; }
-        .ctrl-prev, .ctrl-next {
-            width: 62px;
-            height: 62px;
-            font-size: 26px;
-            background: var(--surface3);
-            border-color: rgba(201,168,76,0.2);
-            color: var(--text);
-        }
+        .ctrl-prev, .ctrl-next { width: 62px; height: 62px; font-size: 26px; background: var(--surface3); border-color: rgba(201,168,76,0.2); color: var(--text); }
         .ctrl-repeat { font-size: 18px; color: var(--text-dim); }
-        .ctrl-repeat.on {
-            background: var(--gold-dim);
-            border-color: var(--gold);
-            color: var(--gold-light);
-            box-shadow: 0 0 12px rgba(201,168,76,0.2);
-        }
+        .ctrl-repeat.on { background: var(--gold-dim); border-color: var(--gold); color: var(--gold-light); box-shadow: 0 0 12px rgba(201,168,76,0.2); }
+        .ctrl-shuffle { font-size: 18px; }
+        .ctrl-shuffle.folder-mode { background: rgba(201,168,76,0.08); border-color: rgba(201,168,76,0.4); color: var(--gold-light); }
 
-        .overlay {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,0.8);
-            z-index: 300; align-items: flex-end;
-        }
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; align-items: flex-end; }
         .overlay.show { display: flex; }
-        .sheet {
-            background: var(--surface);
-            border-radius: 18px 18px 0 0;
-            border: 1px solid var(--border);
-            border-bottom: none;
-            padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
-            width: 100%;
-        }
-        .sheet-handle {
-            width: 32px; height: 3px;
-            background: var(--surface3);
-            border-radius: 2px;
-            margin: 0 auto 20px;
-        }
-        .sheet h3 {
-            font-family: 'DM Serif Display', serif;
-            font-size: 18px; font-weight: 400;
-            margin-bottom: 16px; text-align: center;
-        }
-        .sheet input {
-            width: 100%;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            color: var(--text);
-            font-family: 'DM Mono', monospace;
-            font-size: 14px;
-            padding: 13px 16px;
-            border-radius: 8px;
-            outline: none; margin-bottom: 12px;
-        }
+        .sheet { background: var(--surface); border-radius: 18px 18px 0 0; border: 1px solid var(--border); border-bottom: none; padding: 20px 20px calc(20px + env(safe-area-inset-bottom)); width: 100%; }
+        .sheet-handle { width: 32px; height: 3px; background: var(--surface3); border-radius: 2px; margin: 0 auto 20px; }
+        .sheet h3 { font-family: 'DM Serif Display', serif; font-size: 18px; font-weight: 400; margin-bottom: 16px; text-align: center; }
+        .sheet input { width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-family: 'DM Mono', monospace; font-size: 14px; padding: 13px 16px; border-radius: 8px; outline: none; margin-bottom: 12px; }
         .sheet input:focus { border-color: var(--gold); }
         .sheet-btns { display: flex; gap: 10px; }
-        .sheet-btn {
-            flex: 1; padding: 13px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            font-family: 'DM Mono', monospace;
-            font-size: 13px; letter-spacing: 0.05em;
-            cursor: pointer; transition: all 0.15s;
-        }
+        .sheet-btn { flex: 1; padding: 13px; border-radius: 8px; border: 1px solid var(--border); font-family: 'DM Mono', monospace; font-size: 13px; cursor: pointer; }
         .sheet-btn:active { transform: scale(0.97); }
         .sheet-btn.cancel { background: var(--surface2); color: var(--text-mid); }
         .sheet-btn.confirm { background: var(--gold-dim); border-color: var(--gold); color: var(--gold-light); }
     </style>
 </head>
 <body>
-
 <div class="header">
     <div class="header-inner">
         <div class="header-top">
-            <div class="logo-wrap">
-                <span class="logo-eyebrow">RYOMA</span>
-                <span class="logo">Mu<span>sic</span></span>
+            <span class="logo">Mu<span>sic</span></span>
+            <div class="header-controls">
+                <button class="hbtn" id="editToggle" onclick="toggleEdit()">編集</button>
             </div>
-            <button class="hbtn" id="editToggle" onclick="toggleEdit()">編集</button>
         </div>
+    </div>
+    <div class="tabs-section">
+        <div class="tabs-row" id="folderTabs"></div>
+    </div>
+    <div class="sub-tabs-wrap" id="subTabsWrap">
+        <div class="sub-tabs-inner" id="subTabs"></div>
     </div>
 </div>
 
@@ -356,6 +135,7 @@
         <div class="player-disc" id="playerDisc"></div>
         <div class="player-info">
             <div class="player-title" id="nowPlaying">Select a track</div>
+            <div class="player-folder" id="nowFolder"></div>
         </div>
     </div>
     <audio id="audioPlayer" controls playsinline></audio>
@@ -363,6 +143,7 @@
         <button class="ctrl ctrl-repeat" id="repeatBtn" onclick="toggleRepeat()">🔁</button>
         <button class="ctrl ctrl-prev" onclick="playPrev()">⏮</button>
         <button class="ctrl ctrl-next" onclick="playNext()">⏭</button>
+        <button class="ctrl ctrl-shuffle" id="shuffleBtn" onclick="toggleShuffle()">🔀</button>
     </div>
 </div>
 
@@ -380,32 +161,134 @@
 
 <script>
 const API_KEY = 'AIzaSyDZeucbLPRw8d6RXCL7UHbfF6URuVLq11k';
-const FOLDER_ID = '13jhP3vioRXfXaB2dyzUYAsaUpomYUJYN';
+const ROOT_FOLDER_ID = '13jhP3vioRXfXaB2dyzUYAsaUpomYUJYN';
+const ROOT_FOLDER_NAME = 'RYOMA';
 
 const player = document.getElementById('audioPlayer');
 const playlistEl = document.getElementById('playlist');
+const folderTabsEl = document.getElementById('folderTabs');
+const subTabsEl = document.getElementById('subTabs');
+const subTabsWrap = document.getElementById('subTabsWrap');
 const nowPlayingEl = document.getElementById('nowPlaying');
+const nowFolderEl = document.getElementById('nowFolder');
 const repeatBtn = document.getElementById('repeatBtn');
+const shuffleBtn = document.getElementById('shuffleBtn');
 const playerDisc = document.getElementById('playerDisc');
 
 let currentTracks = [], currentTrackIndex = 0;
-let repeatMode = 0, isEditMode = false, renameTargetIndex = -1;
+let repeatMode = 0, shuffleMode = 0;
+let isEditMode = false, renameTargetIndex = -1;
+let currentFolderId = ROOT_FOLDER_ID;
+let allFolders = []; // [{id, name}] サブフォルダ一覧
 
 function stripExt(n) { return n.replace(/\.[^/.]+$/, ''); }
 
-async function loadTracks() {
+async function fetchSubFolders(folderId) {
+    const r = await fetch('https://www.googleapis.com/drive/v3/files?q=%27' + folderId + '%27+in+parents+and+mimeType%3D%27application%2Fvnd.google-apps.folder%27&key=' + API_KEY + '&fields=files(id,name)&orderBy=name');
+    const d = await r.json(); return d.files || [];
+}
+async function fetchTracks(folderId, folderName) {
+    const r = await fetch('https://www.googleapis.com/drive/v3/files?q=%27' + folderId + '%27+in+parents+and+mimeType+contains+%27audio%27&key=' + API_KEY + '&fields=files(id,name)&orderBy=name');
+    const d = await r.json();
+    return (d.files || []).map(f => ({ ...f, displayName: stripExt(f.name), folderName }));
+}
+
+async function init() {
     document.getElementById('status').innerText = '— 読み込み中 —';
+    // サブフォルダ取得
+    try { allFolders = await fetchSubFolders(ROOT_FOLDER_ID); } catch(e) { allFolders = []; }
+
+    // タブ描画（全曲 + サブフォルダ）
+    renderMainTabs();
+
+    // 最初は全曲ロード
+    await loadFolder(ROOT_FOLDER_ID, ROOT_FOLDER_NAME, null);
+}
+
+function renderMainTabs() {
+    folderTabsEl.innerHTML = '';
+    // 全曲タブ
+    const allBtn = document.createElement('button');
+    allBtn.className = 'tab active';
+    allBtn.innerText = '全曲';
+    allBtn.onclick = () => switchMainTab(ROOT_FOLDER_ID, ROOT_FOLDER_NAME, allBtn);
+    folderTabsEl.appendChild(allBtn);
+    // サブフォルダタブ
+    allFolders.forEach(sf => {
+        const btn = document.createElement('button');
+        btn.className = 'tab';
+        btn.innerText = sf.name;
+        btn.onclick = () => switchMainTab(sf.id, sf.name, btn);
+        folderTabsEl.appendChild(btn);
+    });
+}
+
+async function switchMainTab(folderId, folderName, btnEl) {
+    if (shuffleMode > 0) { shuffleMode = 0; shuffleBtn.className = 'ctrl ctrl-shuffle'; }
+    currentFolderId = folderId;
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    if (btnEl) btnEl.classList.add('active');
+
+    // 孫フォルダがあればサブタブ表示
+    let subFolders = [];
+    try { subFolders = await fetchSubFolders(folderId); } catch(e) {}
+    if (subFolders.length > 0) {
+        subTabsWrap.classList.add('show');
+        subTabsEl.innerHTML = '';
+        const allBtn = document.createElement('button');
+        allBtn.className = 'sub-tab active';
+        allBtn.innerText = '全曲';
+        allBtn.onclick = () => loadFolder(folderId, folderName, allBtn);
+        subTabsEl.appendChild(allBtn);
+        subFolders.forEach(sf => {
+            const btn = document.createElement('button');
+            btn.className = 'sub-tab';
+            btn.innerText = sf.name;
+            btn.onclick = () => loadFolder(sf.id, sf.name, btn);
+            subTabsEl.appendChild(btn);
+        });
+    } else {
+        subTabsWrap.classList.remove('show');
+    }
+
+    await loadFolder(folderId, folderName, null);
+}
+
+async function loadFolder(folderId, folderName, subBtnEl) {
+    if (subBtnEl) {
+        document.querySelectorAll('.sub-tab').forEach(b => b.classList.remove('active'));
+        subBtnEl.classList.add('active');
+    }
+    document.getElementById('status').innerText = '— 読み込み中 —';
+    playlistEl.innerHTML = '';
     try {
-        const r = await fetch('https://www.googleapis.com/drive/v3/files?q=%27' + FOLDER_ID + '%27+in+parents+and+mimeType+contains+%27audio%27&key=' + API_KEY + '&fields=files(id,name)&orderBy=name');
-        const d = await r.json();
-        currentTracks = (d.files || []).map(f => ({ ...f, displayName: stripExt(f.name) }));
-        renderPlaylist();
-    } catch(e) {
-        document.getElementById('status').innerText = '— エラー —';
+        currentTracks = await fetchTracks(folderId, folderName);
+        currentTrackIndex = 0;
+        renderPlaylist(false);
+    } catch(e) { document.getElementById('status').innerText = '— エラー —'; }
+}
+
+async function toggleShuffle() {
+    shuffleMode = (shuffleMode + 1) % 2;
+    shuffleBtn.className = 'ctrl ctrl-shuffle';
+    if (shuffleMode === 0) {
+        // OFF: 元に戻す
+        shuffleBtn.classList.remove('folder-mode');
+        const activeTab = folderTabsEl.querySelector('.tab.active');
+        const idx = Array.from(folderTabsEl.children).indexOf(activeTab);
+        const fid = idx === 0 ? ROOT_FOLDER_ID : allFolders[idx-1]?.id || ROOT_FOLDER_ID;
+        const fname = idx === 0 ? ROOT_FOLDER_NAME : allFolders[idx-1]?.name || ROOT_FOLDER_NAME;
+        await loadFolder(fid, fname, null);
+    } else {
+        // フォルダ内シャッフル
+        shuffleBtn.classList.add('folder-mode');
+        currentTracks = [...currentTracks].sort(() => Math.random() - 0.5);
+        currentTrackIndex = 0;
+        renderPlaylist(false);
     }
 }
 
-function renderPlaylist() {
+function renderPlaylist(showFolder) {
     playlistEl.innerHTML = '';
     if (!currentTracks.length) { document.getElementById('status').innerText = '— 曲が見つかりません —'; return; }
     document.getElementById('status').innerText = '';
@@ -417,6 +300,7 @@ function renderPlaylist() {
             '<div class="track-disc"></div>' +
             '<div class="track-info" onclick="playTrack(' + i + ')">' +
                 '<div class="track-name">' + track.displayName + '</div>' +
+                (showFolder ? '<div class="track-sub">' + track.folderName + '</div>' : '') +
             '</div>' +
             '<div class="track-actions">' +
                 '<button class="act-btn" onclick="moveUp(' + i + ')">↑</button>' +
@@ -436,72 +320,25 @@ function playTrack(i) {
     player.src = 'https://www.googleapis.com/drive/v3/files/' + t.id + '?alt=media&key=' + API_KEY;
     player.play();
     nowPlayingEl.innerText = t.displayName;
+    nowFolderEl.innerText = t.folderName;
     playerDisc.classList.add('playing');
     document.querySelectorAll('.track').forEach((el, j) => el.classList.toggle('active', j === i));
 }
-
-function playNext() {
-    if (!currentTracks.length) return;
-    playTrack(currentTrackIndex + 1 < currentTracks.length ? currentTrackIndex + 1 : 0);
-}
-function playPrev() {
-    if (!currentTracks.length) return;
-    playTrack(currentTrackIndex - 1 >= 0 ? currentTrackIndex - 1 : currentTracks.length - 1);
-}
-
-function toggleRepeat() {
-    repeatMode = (repeatMode + 1) % 3;
-    repeatBtn.textContent = repeatMode === 1 ? '🔂' : '🔁';
-    repeatBtn.className = 'ctrl ctrl-repeat' + (repeatMode > 0 ? ' on' : '');
-}
-
-player.onended = () => { if (repeatMode === 1) player.play(); else playNext(); };
+function playNext() { if (!currentTracks.length) return; playTrack(currentTrackIndex+1 < currentTracks.length ? currentTrackIndex+1 : 0); }
+function playPrev() { if (!currentTracks.length) return; playTrack(currentTrackIndex-1 >= 0 ? currentTrackIndex-1 : currentTracks.length-1); }
+function toggleRepeat() { repeatMode=(repeatMode+1)%3; repeatBtn.textContent=repeatMode===1?'🔂':'🔁'; repeatBtn.className='ctrl ctrl-repeat'+(repeatMode>0?' on':''); }
+player.onended = () => { if (repeatMode===1) player.play(); else playNext(); };
 player.onpause = () => { if (!player.ended) playerDisc.classList.remove('playing'); };
 player.onplay = () => { if (currentTracks.length) playerDisc.classList.add('playing'); };
-
-function toggleEdit() {
-    isEditMode = !isEditMode;
-    document.getElementById('editToggle').innerText = isEditMode ? '完了' : '編集';
-    document.getElementById('editToggle').classList.toggle('on', isEditMode);
-    playlistEl.classList.toggle('edit-mode', isEditMode);
-}
-
-function moveUp(i) {
-    if (i === 0) return;
-    [currentTracks[i-1], currentTracks[i]] = [currentTracks[i], currentTracks[i-1]];
-    if (currentTrackIndex === i) currentTrackIndex--;
-    else if (currentTrackIndex === i-1) currentTrackIndex++;
-    renderPlaylist(); if (isEditMode) playlistEl.classList.add('edit-mode');
-}
-function moveDown(i) {
-    if (i === currentTracks.length - 1) return;
-    [currentTracks[i], currentTracks[i+1]] = [currentTracks[i+1], currentTracks[i]];
-    if (currentTrackIndex === i) currentTrackIndex++;
-    else if (currentTrackIndex === i+1) currentTrackIndex--;
-    renderPlaylist(); if (isEditMode) playlistEl.classList.add('edit-mode');
-}
-function deleteTrack(i) {
-    currentTracks.splice(i, 1);
-    if (currentTrackIndex >= currentTracks.length) currentTrackIndex = currentTracks.length - 1;
-    renderPlaylist(); if (isEditMode) playlistEl.classList.add('edit-mode');
-}
-
-function openRename(i) {
-    renameTargetIndex = i;
-    document.getElementById('renameInput').value = currentTracks[i].displayName;
-    document.getElementById('renameOverlay').classList.add('show');
-}
+function toggleEdit() { isEditMode=!isEditMode; document.getElementById('editToggle').innerText=isEditMode?'完了':'編集'; document.getElementById('editToggle').classList.toggle('on',isEditMode); playlistEl.classList.toggle('edit-mode',isEditMode); }
+function moveUp(i) { if(i===0)return; [currentTracks[i-1],currentTracks[i]]=[currentTracks[i],currentTracks[i-1]]; if(currentTrackIndex===i)currentTrackIndex--; else if(currentTrackIndex===i-1)currentTrackIndex++; renderPlaylist(false); if(isEditMode)playlistEl.classList.add('edit-mode'); }
+function moveDown(i) { if(i===currentTracks.length-1)return; [currentTracks[i],currentTracks[i+1]]=[currentTracks[i+1],currentTracks[i]]; if(currentTrackIndex===i)currentTrackIndex++; else if(currentTrackIndex===i+1)currentTrackIndex--; renderPlaylist(false); if(isEditMode)playlistEl.classList.add('edit-mode'); }
+function deleteTrack(i) { currentTracks.splice(i,1); if(currentTrackIndex>=currentTracks.length)currentTrackIndex=currentTracks.length-1; renderPlaylist(false); if(isEditMode)playlistEl.classList.add('edit-mode'); }
+function openRename(i) { renameTargetIndex=i; document.getElementById('renameInput').value=currentTracks[i].displayName; document.getElementById('renameOverlay').classList.add('show'); }
 function closeModal() { document.getElementById('renameOverlay').classList.remove('show'); }
-function confirmRename() {
-    if (renameTargetIndex >= 0) {
-        currentTracks[renameTargetIndex].displayName = document.getElementById('renameInput').value;
-        renderPlaylist(); if (isEditMode) playlistEl.classList.add('edit-mode');
-        if (currentTrackIndex === renameTargetIndex) nowPlayingEl.innerText = currentTracks[renameTargetIndex].displayName;
-    }
-    closeModal();
-}
+function confirmRename() { if(renameTargetIndex>=0){currentTracks[renameTargetIndex].displayName=document.getElementById('renameInput').value; renderPlaylist(false); if(isEditMode)playlistEl.classList.add('edit-mode'); if(currentTrackIndex===renameTargetIndex)nowPlayingEl.innerText=currentTracks[renameTargetIndex].displayName;} closeModal(); }
 
-loadTracks();
+init();
 </script>
 </body>
 </html>
