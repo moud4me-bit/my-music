@@ -10,7 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
         :root {
             --gold: #c9a84c;
             --gold-light: #e8c97a;
@@ -24,20 +23,16 @@
             --text-mid: #9e9278;
             --border: rgba(201,168,76,0.12);
             --danger: #c0392b;
-            --radius: 12px;
         }
-
         body {
             font-family: 'DM Mono', monospace;
             background: var(--bg);
             color: var(--text);
-            padding-bottom: 260px;
+            padding-bottom: 280px;
             user-select: none;
             min-height: 100vh;
             overflow-x: hidden;
         }
-
-        /* Noise texture overlay */
         body::before {
             content: '';
             position: fixed;
@@ -47,481 +42,152 @@
             z-index: 9999;
             opacity: 0.4;
         }
-
-        /* ── HEADER ── */
         .header {
             padding: env(safe-area-inset-top) 0 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            position: sticky; top: 0; z-index: 100;
             background: rgba(10,9,5,0.92);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             border-bottom: 1px solid var(--border);
         }
-
-        .header-inner {
-            padding: 14px 20px 0;
-        }
-
-        .header-top {
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            margin-bottom: 14px;
-        }
-
-        .logo-wrap { display: flex; flex-direction: column; gap: 2px; }
-
-        .logo {
-            font-family: 'DM Serif Display', serif;
-            font-size: 32px;
-            font-weight: 400;
-            color: var(--text);
-            letter-spacing: -0.5px;
-            line-height: 1;
-        }
-
-        .logo span {
-            font-style: italic;
-            color: var(--gold);
-        }
-
-        .header-controls {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
+        .header-inner { padding: 14px 20px 0; }
+        .header-top { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 14px; }
+        .logo { font-family: 'DM Serif Display', serif; font-size: 32px; font-weight: 400; color: var(--text); letter-spacing: -0.5px; line-height: 1; }
+        .logo span { font-style: italic; color: var(--gold); }
+        .header-controls { display: flex; align-items: center; gap: 8px; }
         .hbtn {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            color: var(--text-mid);
-            font-family: 'DM Mono', monospace;
-            font-size: 10px;
-            letter-spacing: 0.1em;
-            padding: 7px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
+            background: var(--surface2); border: 1px solid var(--border); color: var(--text-mid);
+            font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em;
+            padding: 7px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s; white-space: nowrap;
         }
         .hbtn:active { transform: scale(0.95); }
-        .hbtn.on {
-            background: var(--gold-dim);
-            border-color: var(--gold);
-            color: var(--gold-light);
-        }
-        .hbtn.danger-btn { color: var(--text-dim); }
+        .hbtn.on { background: var(--gold-dim); border-color: var(--gold); color: var(--gold-light); }
 
-        /* ── FOLDER TABS ── */
-        .tabs-wrap {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            padding: 0 20px 14px;
-            margin-top: 4px;
-        }
-        .tabs-wrap::-webkit-scrollbar { display: none; }
-
-        .tabs {
-            display: flex;
-            gap: 6px;
-            width: max-content;
-        }
-
+        .tabs-section { padding: 0 20px 12px; }
+        .tabs-row { display: flex; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .tabs-row::-webkit-scrollbar { display: none; }
         .tab {
-            padding: 7px 16px;
-            border-radius: 4px;
-            border: 1px solid var(--border);
-            background: transparent;
-            color: var(--text-mid);
-            font-family: 'DM Serif Display', serif;
-            font-size: 14px;
-            letter-spacing: 0.01em;
-            white-space: nowrap;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            padding: 7px 16px; border-radius: 4px; border: 1px solid var(--border);
+            background: transparent; color: var(--text-mid);
+            font-family: 'DM Serif Display', serif; font-size: 14px;
+            white-space: nowrap; cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; gap: 6px; flex-shrink: 0;
         }
         .tab:active { transform: scale(0.96); }
-        .tab.active {
-            background: var(--gold-dim);
-            border-color: var(--gold);
-            color: var(--gold-light);
-        }
-
-        .tab-arrows {
-            display: none;
-            gap: 3px;
-        }
+        .tab.active { background: var(--gold-dim); border-color: var(--gold); color: var(--gold-light); }
+        .tab-arrows { display: none; gap: 3px; }
         .tab-arrow {
-            background: var(--surface3);
-            border: none;
-            color: var(--text-dim);
-            font-size: 10px;
-            width: 18px;
-            height: 18px;
-            border-radius: 3px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.15s;
+            background: var(--surface3); border: none; color: var(--text-dim);
+            font-size: 10px; width: 18px; height: 18px; border-radius: 3px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
         }
         .tab-arrow:active { background: var(--gold-dim); color: var(--gold); }
         .folder-edit-mode .tab-arrows { display: flex; }
 
-        /* ── TRACK LIST ── */
-        #status {
-            text-align: center;
-            padding: 60px 20px;
-            font-family: 'DM Serif Display', serif;
-            font-size: 16px;
-            font-style: italic;
-            color: var(--text-dim);
+        .sub-tabs-wrap { display: none; padding: 0 20px 10px; border-top: 1px solid var(--border); }
+        .sub-tabs-wrap.show { display: block; }
+        .sub-tabs-inner { display: flex; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-top: 10px; }
+        .sub-tabs-inner::-webkit-scrollbar { display: none; }
+        .sub-tab {
+            padding: 5px 14px; border-radius: 4px; border: 1px solid var(--border);
+            background: transparent; color: var(--text-dim);
+            font-family: 'DM Serif Display', serif; font-size: 13px;
+            white-space: nowrap; cursor: pointer; transition: all 0.2s; flex-shrink: 0;
         }
+        .sub-tab:active { transform: scale(0.96); }
+        .sub-tab.active { background: rgba(201,168,76,0.08); border-color: rgba(201,168,76,0.4); color: var(--gold-light); }
 
+        #status { text-align: center; padding: 60px 20px; font-family: 'DM Serif Display', serif; font-size: 16px; font-style: italic; color: var(--text-dim); }
         #playlist { list-style: none; padding: 6px 0; }
-
         .track {
-            display: flex;
-            align-items: center;
-            padding: 11px 20px;
-            gap: 14px;
+            display: flex; align-items: center; padding: 11px 20px; gap: 14px;
             border-bottom: 1px solid rgba(201,168,76,0.05);
-            transition: all 0.18s;
-            cursor: pointer;
-            position: relative;
+            transition: all 0.18s; cursor: pointer; position: relative;
         }
         .track:active { background: rgba(201,168,76,0.04); }
-
-        .track.active {
-            background: linear-gradient(90deg, rgba(201,168,76,0.08) 0%, transparent 100%);
-        }
-        .track.active::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: var(--gold);
-            border-radius: 0 2px 2px 0;
-        }
-
-        .track-num {
-            font-size: 10px;
-            color: var(--text-dim);
-            width: 22px;
-            text-align: right;
-            flex-shrink: 0;
-            font-feature-settings: 'tnum';
-        }
+        .track.active { background: linear-gradient(90deg, rgba(201,168,76,0.08) 0%, transparent 100%); }
+        .track.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--gold); border-radius: 0 2px 2px 0; }
+        .track-num { font-size: 10px; color: var(--text-dim); width: 22px; text-align: right; flex-shrink: 0; }
         .track.active .track-num { color: var(--gold); }
-
         .track-disc {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
+            width: 36px; height: 36px; border-radius: 50%;
             background: radial-gradient(circle at 30% 30%, var(--surface3), var(--surface));
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s;
+            border: 1px solid var(--border); flex-shrink: 0; position: relative; overflow: hidden;
         }
-        .track-disc::after {
-            content: '';
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--bg);
-            border: 1px solid var(--border);
-        }
-        .track.active .track-disc {
-            border-color: var(--gold);
-            background: radial-gradient(circle at 30% 30%, #2a2410, #0a0905);
-            animation: spin 4s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .track-disc::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 8px; height: 8px; border-radius: 50%; background: var(--bg); border: 1px solid var(--border); }
+        .track.active .track-disc { border-color: var(--gold); animation: spin 4s linear infinite; }
         .track.active .track-disc::after { border-color: var(--gold); }
-
+        @keyframes spin { to { transform: rotate(360deg); } }
         .track-info { flex: 1; overflow: hidden; }
-        .track-name {
-            font-size: 13px;
-            font-weight: 500;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            color: var(--text);
-            letter-spacing: -0.01em;
-        }
+        .track-name { font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .track.active .track-name { color: var(--gold-light); }
-
-        .track-folder {
-            font-size: 10px;
-            color: var(--text-dim);
-            margin-top: 2px;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
-
-        .track-actions {
-            display: none;
-            gap: 4px;
-            flex-shrink: 0;
-        }
-        .act-btn {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            color: var(--text-dim);
-            font-size: 11px;
-            padding: 5px 8px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-family: 'DM Mono', monospace;
-            transition: all 0.15s;
-        }
+        .track-sub { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+        .track-actions { display: none; gap: 4px; flex-shrink: 0; }
+        .act-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim); font-size: 11px; padding: 5px 8px; border-radius: 5px; cursor: pointer; font-family: 'DM Mono', monospace; }
         .act-btn:active { transform: scale(0.93); }
         .act-btn.del { color: var(--danger); border-color: rgba(192,57,43,0.25); }
         .edit-mode .track-actions { display: flex; }
 
-        /* ── PLAYER BAR ── */
         .player-bar {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background: rgba(10,9,5,0.97);
-            border-top: 1px solid var(--border);
-            padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
-            backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: blur(40px);
+            position: fixed; bottom: 0; width: 100%;
+            background: rgba(10,9,5,0.97); border-top: 1px solid var(--border);
+            padding: 14px 20px calc(14px + env(safe-area-inset-bottom));
+            backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
         }
-
-        .player-bar::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--gold), transparent);
-            opacity: 0.4;
-        }
-
-        .now-playing-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 10px;
-        }
-
+        .player-bar::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); opacity: 0.4; }
+        .now-playing-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
         .player-disc {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
+            width: 42px; height: 42px; border-radius: 50%;
             background: radial-gradient(circle at 35% 35%, var(--surface3), var(--surface));
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s;
+            border: 1px solid var(--border); flex-shrink: 0; position: relative; overflow: hidden;
         }
-        .player-disc::after {
-            content: '';
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--bg);
-            border: 1px solid var(--border);
-        }
-        .player-disc.playing {
-            border-color: var(--gold);
-            box-shadow: 0 0 16px rgba(201,168,76,0.25);
-            animation: spin 3s linear infinite;
-        }
+        .player-disc::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 10px; height: 10px; border-radius: 50%; background: var(--bg); border: 1px solid var(--border); }
+        .player-disc.playing { border-color: var(--gold); box-shadow: 0 0 16px rgba(201,168,76,0.25); animation: spin 3s linear infinite; }
         .player-disc.playing::after { border-color: var(--gold); }
-
         .player-info { flex: 1; overflow: hidden; }
-        .player-title {
-            font-family: 'DM Serif Display', serif;
-            font-size: 15px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            color: var(--text);
-        }
-        .player-folder {
-            font-size: 10px;
-            color: var(--text-dim);
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            margin-top: 2px;
-        }
-
-        audio {
-            width: 100%;
-            height: 28px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-        }
-        audio::-webkit-media-controls-panel {
-            background: var(--surface2);
-        }
-
-        .controls-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .ctrl {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            color: var(--text-mid);
-            cursor: pointer;
-            width: 52px;
-            height: 52px;
-            font-size: 20px;
-            line-height: 1;
-            transition: all 0.18s;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .player-title { font-family: 'DM Serif Display', serif; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .player-folder { font-size: 10px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 2px; }
+        audio { width: 100%; height: 28px; margin-bottom: 10px; border-radius: 4px; }
+        .controls-row { display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .ctrl { background: var(--surface2); border: 1px solid var(--border); color: var(--text-mid); cursor: pointer; width: 52px; height: 52px; font-size: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.18s; }
         .ctrl:active { transform: scale(0.88); opacity: 0.7; }
+        .ctrl-prev, .ctrl-next { width: 62px; height: 62px; font-size: 26px; background: var(--surface3); border-color: rgba(201,168,76,0.2); color: var(--text); }
+        .ctrl-repeat { font-size: 18px; color: var(--text-dim); }
+        .ctrl-repeat.on { background: var(--gold-dim); border-color: var(--gold); color: var(--gold-light); box-shadow: 0 0 12px rgba(201,168,76,0.2); }
+        .ctrl-shuffle { font-size: 18px; }
+        .ctrl-shuffle.folder-mode { background: rgba(201,168,76,0.08); border-color: rgba(201,168,76,0.4); color: var(--gold-light); }
+        .ctrl-shuffle.all-mode { background: var(--gold-dim); border-color: var(--gold); color: var(--gold-light); box-shadow: 0 0 12px rgba(201,168,76,0.2); }
 
-        .ctrl-prev, .ctrl-next {
-            width: 62px;
-            height: 62px;
-            font-size: 26px;
-            background: var(--surface3);
-            border-color: rgba(201,168,76,0.2);
-            color: var(--text);
-        }
-
-        .ctrl-repeat {
-            font-size: 18px;
-            color: var(--text-dim);
-        }
-        .ctrl-repeat.on {
-            background: var(--gold-dim);
-            border-color: var(--gold);
-            color: var(--gold-light);
-            box-shadow: 0 0 12px rgba(201,168,76,0.2);
-        }
-
-        .ctrl-shuffle {
-            font-size: 18px;
-        }
-        .ctrl-shuffle.on {
-            background: var(--gold-dim);
-            border-color: var(--gold);
-            color: var(--gold-light);
-            box-shadow: 0 0 12px rgba(201,168,76,0.2);
-        }
-
-        /* ── MODAL ── */
-        .overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.8);
-            z-index: 300;
-            align-items: flex-end;
-        }
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; align-items: flex-end; }
         .overlay.show { display: flex; }
-
-        .sheet {
-            background: var(--surface);
-            border-radius: 18px 18px 0 0;
-            border: 1px solid var(--border);
-            border-bottom: none;
-            padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
-            width: 100%;
-        }
-
-        .sheet-handle {
-            width: 32px;
-            height: 3px;
-            background: var(--surface3);
-            border-radius: 2px;
-            margin: 0 auto 20px;
-        }
-
-        .sheet h3 {
-            font-family: 'DM Serif Display', serif;
-            font-size: 18px;
-            font-weight: 400;
-            margin-bottom: 16px;
-            text-align: center;
-            color: var(--text);
-        }
-
-        .sheet input {
-            width: 100%;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            color: var(--text);
-            font-family: 'DM Mono', monospace;
-            font-size: 14px;
-            padding: 13px 16px;
-            border-radius: 8px;
-            outline: none;
-            margin-bottom: 12px;
-            transition: border-color 0.2s;
-        }
+        .sheet { background: var(--surface); border-radius: 18px 18px 0 0; border: 1px solid var(--border); border-bottom: none; padding: 20px 20px calc(20px + env(safe-area-inset-bottom)); width: 100%; }
+        .sheet-handle { width: 32px; height: 3px; background: var(--surface3); border-radius: 2px; margin: 0 auto 20px; }
+        .sheet h3 { font-family: 'DM Serif Display', serif; font-size: 18px; font-weight: 400; margin-bottom: 16px; text-align: center; }
+        .sheet input { width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-family: 'DM Mono', monospace; font-size: 14px; padding: 13px 16px; border-radius: 8px; outline: none; margin-bottom: 12px; }
         .sheet input:focus { border-color: var(--gold); }
-
         .sheet-btns { display: flex; gap: 10px; }
-        .sheet-btn {
-            flex: 1;
-            padding: 13px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            font-family: 'DM Mono', monospace;
-            font-size: 13px;
-            letter-spacing: 0.05em;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
+        .sheet-btn { flex: 1; padding: 13px; border-radius: 8px; border: 1px solid var(--border); font-family: 'DM Mono', monospace; font-size: 13px; cursor: pointer; }
         .sheet-btn:active { transform: scale(0.97); }
         .sheet-btn.cancel { background: var(--surface2); color: var(--text-mid); }
-        .sheet-btn.confirm {
-            background: var(--gold-dim);
-            border-color: var(--gold);
-            color: var(--gold-light);
-        }
+        .sheet-btn.confirm { background: var(--gold-dim); border-color: var(--gold); color: var(--gold-light); }
     </style>
 </head>
 <body>
-
 <div class="header">
     <div class="header-inner">
         <div class="header-top">
-            <div class="logo-wrap">
-                <span class="logo">Mu<span>sic</span></span>
-            </div>
+            <span class="logo">Mu<span>sic</span></span>
             <div class="header-controls">
                 <button class="hbtn" id="folderEditBtn" onclick="toggleFolderEdit()">並替</button>
-                <button class="hbtn danger-btn" id="editToggle" onclick="toggleEdit()">編集</button>
+                <button class="hbtn" id="editToggle" onclick="toggleEdit()">編集</button>
             </div>
         </div>
     </div>
-    <div class="tabs-wrap">
-        <div class="tabs" id="folderTabs"></div>
+    <div class="tabs-section">
+        <div class="tabs-row" id="folderTabs"></div>
+    </div>
+    <div class="sub-tabs-wrap" id="subTabsWrap">
+        <div class="sub-tabs-inner" id="subTabs"></div>
     </div>
 </div>
 
@@ -578,6 +244,8 @@ let FOLDERS = [
 const player = document.getElementById('audioPlayer');
 const playlistEl = document.getElementById('playlist');
 const folderTabsEl = document.getElementById('folderTabs');
+const subTabsEl = document.getElementById('subTabs');
+const subTabsWrap = document.getElementById('subTabsWrap');
 const nowPlayingEl = document.getElementById('nowPlaying');
 const nowFolderEl = document.getElementById('nowFolder');
 const repeatBtn = document.getElementById('repeatBtn');
@@ -585,19 +253,28 @@ const shuffleBtn = document.getElementById('shuffleBtn');
 const playerDisc = document.getElementById('playerDisc');
 
 let currentTracks = [], currentTrackIndex = 0;
-let repeatMode = 0, isShuffleMode = false, isEditMode = false, isFolderEditMode = false;
+let repeatMode = 0, shuffleMode = 0;
+let isEditMode = false, isFolderEditMode = false;
 let renameTargetIndex = -1, currentFolderId = null;
 
 function stripExt(n) { return n.replace(/\.[^/.]+$/, ''); }
 
-function saveFolderOrder() {
-    localStorage.setItem('folderOrder', JSON.stringify(FOLDERS.map(f => f.id)));
-}
+function saveFolderOrder() { localStorage.setItem('folderOrder', JSON.stringify(FOLDERS.map(f => f.id))); }
 function loadFolderOrder() {
     const s = localStorage.getItem('folderOrder');
     if (!s) return;
     const order = JSON.parse(s);
-    FOLDERS.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
+    FOLDERS.sort((a, b) => { const ai = order.indexOf(a.id), bi = order.indexOf(b.id); return (ai===-1?999:ai)-(bi===-1?999:bi); });
+}
+
+async function fetchSubFolders(folderId) {
+    const r = await fetch('https://www.googleapis.com/drive/v3/files?q=%27' + folderId + '%27+in+parents+and+mimeType%3D%27application%2Fvnd.google-apps.folder%27&key=' + API_KEY + '&fields=files(id,name)&orderBy=name');
+    const d = await r.json(); return d.files || [];
+}
+async function fetchTracks(folderId, folderName) {
+    const r = await fetch('https://www.googleapis.com/drive/v3/files?q=%27' + folderId + '%27+in+parents+and+mimeType+contains+%27audio%27&key=' + API_KEY + '&fields=files(id,name)&orderBy=name');
+    const d = await r.json();
+    return (d.files || []).map(f => ({ ...f, displayName: stripExt(f.name), folderName }));
 }
 
 function init() {
@@ -613,74 +290,98 @@ function renderTabs() {
     FOLDERS.forEach((folder, i) => {
         const btn = document.createElement('button');
         btn.className = 'tab' + (folder.id === currentFolderId ? ' active' : '');
-        btn.innerHTML = folder.name +
-            '<span class="tab-arrows">' +
-            '<button class="tab-arrow" onclick="event.stopPropagation();moveFolderLeft(' + i + ')">◀</button>' +
-            '<button class="tab-arrow" onclick="event.stopPropagation();moveFolderRight(' + i + ')">▶</button>' +
-            '</span>';
+        btn.innerHTML = folder.name + '<span class="tab-arrows"><button class="tab-arrow" onclick="event.stopPropagation();moveFolderLeft(' + i + ')">◀</button><button class="tab-arrow" onclick="event.stopPropagation();moveFolderRight(' + i + ')">▶</button></span>';
         btn.onclick = () => { if (!isFolderEditMode) switchFolder(folder.id, btn); };
         folderTabsEl.appendChild(btn);
     });
     folderTabsEl.classList.toggle('folder-edit-mode', isFolderEditMode);
 }
-
-function toggleFolderEdit() {
-    isFolderEditMode = !isFolderEditMode;
-    document.getElementById('folderEditBtn').classList.toggle('on', isFolderEditMode);
-    renderTabs();
-}
-
-function moveFolderLeft(i) {
-    if (i === 0) return;
-    [FOLDERS[i-1], FOLDERS[i]] = [FOLDERS[i], FOLDERS[i-1]];
-    saveFolderOrder(); renderTabs();
-}
-function moveFolderRight(i) {
-    if (i === FOLDERS.length - 1) return;
-    [FOLDERS[i], FOLDERS[i+1]] = [FOLDERS[i+1], FOLDERS[i]];
-    saveFolderOrder(); renderTabs();
-}
+function toggleFolderEdit() { isFolderEditMode = !isFolderEditMode; document.getElementById('folderEditBtn').classList.toggle('on', isFolderEditMode); renderTabs(); }
+function moveFolderLeft(i) { if (i===0) return; [FOLDERS[i-1],FOLDERS[i]]=[FOLDERS[i],FOLDERS[i-1]]; saveFolderOrder(); renderTabs(); }
+function moveFolderRight(i) { if (i===FOLDERS.length-1) return; [FOLDERS[i],FOLDERS[i+1]]=[FOLDERS[i+1],FOLDERS[i]]; saveFolderOrder(); renderTabs(); }
 
 async function switchFolder(folderId, btnEl) {
-    if (isShuffleMode) return;
+    if (shuffleMode === 2) return;
     currentFolderId = folderId;
     document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
     if (btnEl) btnEl.classList.add('active');
     localStorage.setItem('lastFolderId', folderId);
     document.getElementById('status').innerText = '— 読み込み中 —';
     playlistEl.innerHTML = '';
-    try {
-        const r = await fetch('https://www.googleapis.com/drive/v3/files?q=%27' + folderId + '%27+in+parents+and+mimeType+contains+%27audio%27&key=' + API_KEY + '&fields=files(id,name)&orderBy=name');
-        const d = await r.json();
-        currentTracks = (d.files || []).map(f => ({ ...f, displayName: stripExt(f.name), folderName: FOLDERS.find(fl => fl.id === folderId)?.name || '' }));
-        renderPlaylist();
-    } catch(e) {
-        document.getElementById('status').innerText = '— エラー —';
+    const folderName = FOLDERS.find(f => f.id === folderId)?.name || '';
+
+    // サブフォルダ検出
+    let subFolders = [];
+    try { subFolders = await fetchSubFolders(folderId); } catch(e) {}
+
+    if (subFolders.length > 0) {
+        subTabsWrap.classList.add('show');
+        subTabsEl.innerHTML = '';
+        const allBtn = document.createElement('button');
+        allBtn.className = 'sub-tab active';
+        allBtn.innerText = '全曲';
+        allBtn.onclick = () => loadSubTracks(folderId, folderName, allBtn);
+        subTabsEl.appendChild(allBtn);
+        subFolders.forEach(sf => {
+            const btn = document.createElement('button');
+            btn.className = 'sub-tab';
+            btn.innerText = sf.name;
+            btn.onclick = () => loadSubTracks(sf.id, sf.name, btn);
+            subTabsEl.appendChild(btn);
+        });
+    } else {
+        subTabsWrap.classList.remove('show');
     }
+
+    try {
+        currentTracks = await fetchTracks(folderId, folderName);
+        currentTrackIndex = 0;
+        renderPlaylist(false);
+    } catch(e) { document.getElementById('status').innerText = '— エラー —'; }
+}
+
+async function loadSubTracks(folderId, folderName, btnEl) {
+    document.querySelectorAll('.sub-tab').forEach(b => b.classList.remove('active'));
+    if (btnEl) btnEl.classList.add('active');
+    document.getElementById('status').innerText = '— 読み込み中 —';
+    playlistEl.innerHTML = '';
+    try {
+        currentTracks = await fetchTracks(folderId, folderName);
+        currentTrackIndex = 0;
+        renderPlaylist(false);
+    } catch(e) { document.getElementById('status').innerText = '— エラー —'; }
 }
 
 async function toggleShuffle() {
-    isShuffleMode = !isShuffleMode;
-    shuffleBtn.classList.toggle('on', isShuffleMode);
-    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-    if (isShuffleMode) {
+    shuffleMode = (shuffleMode + 1) % 3;
+    const btn = document.getElementById('shuffleBtn');
+    btn.className = 'ctrl ctrl-shuffle';
+    if (shuffleMode === 0) {
+        // OFF
+        const lastId = localStorage.getItem('lastFolderId') || FOLDERS[0].id;
+        const tabBtn = Array.from(folderTabsEl.children).find((b, i) => FOLDERS[i]?.id === lastId) || folderTabsEl.firstChild;
+        switchFolder(lastId, tabBtn);
+    } else if (shuffleMode === 1) {
+        // フォルダ内シャッフル
+        btn.classList.add('folder-mode');
+        currentTracks = [...currentTracks].sort(() => Math.random() - 0.5);
+        currentTrackIndex = 0;
+        renderPlaylist(false);
+    } else {
+        // 全体シャッフル
+        btn.classList.add('all-mode');
+        document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+        subTabsWrap.classList.remove('show');
         document.getElementById('status').innerText = '— 全フォルダ読み込み中 —';
         playlistEl.innerHTML = '';
-        const results = await Promise.all(FOLDERS.map(folder =>
-            fetch('https://www.googleapis.com/drive/v3/files?q=%27' + folder.id + '%27+in+parents+and+mimeType+contains+%27audio%27&key=' + API_KEY + '&fields=files(id,name)&orderBy=name')
-            .then(r => r.json())
-            .then(d => (d.files || []).map(f => ({ ...f, displayName: stripExt(f.name), folderName: folder.name })))
-        ));
+        const results = await Promise.all(FOLDERS.map(f => fetchTracks(f.id, f.name).catch(() => [])));
         currentTracks = results.flat().sort(() => Math.random() - 0.5);
-        renderPlaylist();
-    } else {
-        const lastId = localStorage.getItem('lastFolderId') || FOLDERS[0].id;
-        const btn = Array.from(folderTabsEl.children).find((b, i) => FOLDERS[i]?.id === lastId) || folderTabsEl.firstChild;
-        switchFolder(lastId, btn);
+        currentTrackIndex = 0;
+        renderPlaylist(true);
     }
 }
 
-function renderPlaylist() {
+function renderPlaylist(showFolder) {
     playlistEl.innerHTML = '';
     if (!currentTracks.length) { document.getElementById('status').innerText = '— 曲が見つかりません —'; return; }
     document.getElementById('status').innerText = '';
@@ -692,7 +393,7 @@ function renderPlaylist() {
             '<div class="track-disc"></div>' +
             '<div class="track-info" onclick="playTrack(' + i + ')">' +
                 '<div class="track-name">' + track.displayName + '</div>' +
-                (isShuffleMode ? '<div class="track-folder">' + track.folderName + '</div>' : '') +
+                (showFolder ? '<div class="track-sub">' + track.folderName + '</div>' : '') +
             '</div>' +
             '<div class="track-actions">' +
                 '<button class="act-btn" onclick="moveUp(' + i + ')">↑</button>' +
@@ -716,71 +417,19 @@ function playTrack(i) {
     playerDisc.classList.add('playing');
     document.querySelectorAll('.track').forEach((el, j) => el.classList.toggle('active', j === i));
 }
-
-function playNext() {
-    if (!currentTracks.length) return;
-    playTrack(currentTrackIndex + 1 < currentTracks.length ? currentTrackIndex + 1 : 0);
-}
-function playPrev() {
-    if (!currentTracks.length) return;
-    playTrack(currentTrackIndex - 1 >= 0 ? currentTrackIndex - 1 : currentTracks.length - 1);
-}
-
-function toggleRepeat() {
-    repeatMode = (repeatMode + 1) % 3;
-    repeatBtn.textContent = repeatMode === 1 ? '🔂' : '🔁';
-    repeatBtn.className = 'ctrl ctrl-repeat' + (repeatMode > 0 ? ' on' : '');
-}
-
-player.onended = () => {
-    if (repeatMode === 1) player.play();
-    else playNext();
-};
-
-player.onpause = () => { if (player.ended) return; playerDisc.classList.remove('playing'); };
+function playNext() { if (!currentTracks.length) return; playTrack(currentTrackIndex+1 < currentTracks.length ? currentTrackIndex+1 : 0); }
+function playPrev() { if (!currentTracks.length) return; playTrack(currentTrackIndex-1 >= 0 ? currentTrackIndex-1 : currentTracks.length-1); }
+function toggleRepeat() { repeatMode=(repeatMode+1)%3; repeatBtn.textContent=repeatMode===1?'🔂':'🔁'; repeatBtn.className='ctrl ctrl-repeat'+(repeatMode>0?' on':''); }
+player.onended = () => { if (repeatMode===1) player.play(); else playNext(); };
+player.onpause = () => { if (!player.ended) playerDisc.classList.remove('playing'); };
 player.onplay = () => { if (currentTracks.length) playerDisc.classList.add('playing'); };
-
-function toggleEdit() {
-    isEditMode = !isEditMode;
-    document.getElementById('editToggle').innerText = isEditMode ? '完了' : '編集';
-    document.getElementById('editToggle').classList.toggle('on', isEditMode);
-    playlistEl.classList.toggle('edit-mode', isEditMode);
-}
-
-function moveUp(i) {
-    if (i === 0) return;
-    [currentTracks[i-1], currentTracks[i]] = [currentTracks[i], currentTracks[i-1]];
-    if (currentTrackIndex === i) currentTrackIndex--;
-    else if (currentTrackIndex === i-1) currentTrackIndex++;
-    renderPlaylist(); if (isEditMode) playlistEl.classList.add('edit-mode');
-}
-function moveDown(i) {
-    if (i === currentTracks.length - 1) return;
-    [currentTracks[i], currentTracks[i+1]] = [currentTracks[i+1], currentTracks[i]];
-    if (currentTrackIndex === i) currentTrackIndex++;
-    else if (currentTrackIndex === i+1) currentTrackIndex--;
-    renderPlaylist(); if (isEditMode) playlistEl.classList.add('edit-mode');
-}
-function deleteTrack(i) {
-    currentTracks.splice(i, 1);
-    if (currentTrackIndex >= currentTracks.length) currentTrackIndex = currentTracks.length - 1;
-    renderPlaylist(); if (isEditMode) playlistEl.classList.add('edit-mode');
-}
-
-function openRename(i) {
-    renameTargetIndex = i;
-    document.getElementById('renameInput').value = currentTracks[i].displayName;
-    document.getElementById('renameOverlay').classList.add('show');
-}
+function toggleEdit() { isEditMode=!isEditMode; document.getElementById('editToggle').innerText=isEditMode?'完了':'編集'; document.getElementById('editToggle').classList.toggle('on',isEditMode); playlistEl.classList.toggle('edit-mode',isEditMode); }
+function moveUp(i) { if(i===0)return; [currentTracks[i-1],currentTracks[i]]=[currentTracks[i],currentTracks[i-1]]; if(currentTrackIndex===i)currentTrackIndex--; else if(currentTrackIndex===i-1)currentTrackIndex++; renderPlaylist(shuffleMode===2); if(isEditMode)playlistEl.classList.add('edit-mode'); }
+function moveDown(i) { if(i===currentTracks.length-1)return; [currentTracks[i],currentTracks[i+1]]=[currentTracks[i+1],currentTracks[i]]; if(currentTrackIndex===i)currentTrackIndex++; else if(currentTrackIndex===i+1)currentTrackIndex--; renderPlaylist(shuffleMode===2); if(isEditMode)playlistEl.classList.add('edit-mode'); }
+function deleteTrack(i) { currentTracks.splice(i,1); if(currentTrackIndex>=currentTracks.length)currentTrackIndex=currentTracks.length-1; renderPlaylist(shuffleMode===2); if(isEditMode)playlistEl.classList.add('edit-mode'); }
+function openRename(i) { renameTargetIndex=i; document.getElementById('renameInput').value=currentTracks[i].displayName; document.getElementById('renameOverlay').classList.add('show'); }
 function closeModal() { document.getElementById('renameOverlay').classList.remove('show'); }
-function confirmRename() {
-    if (renameTargetIndex >= 0) {
-        currentTracks[renameTargetIndex].displayName = document.getElementById('renameInput').value;
-        renderPlaylist(); if (isEditMode) playlistEl.classList.add('edit-mode');
-        if (currentTrackIndex === renameTargetIndex) nowPlayingEl.innerText = currentTracks[renameTargetIndex].displayName;
-    }
-    closeModal();
-}
+function confirmRename() { if(renameTargetIndex>=0){currentTracks[renameTargetIndex].displayName=document.getElementById('renameInput').value; renderPlaylist(shuffleMode===2); if(isEditMode)playlistEl.classList.add('edit-mode'); if(currentTrackIndex===renameTargetIndex)nowPlayingEl.innerText=currentTracks[renameTargetIndex].displayName;} closeModal(); }
 
 init();
 </script>
